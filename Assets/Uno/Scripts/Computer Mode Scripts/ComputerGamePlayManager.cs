@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 #pragma warning disable 0618
 
-public class GamePlayManager : MonoBehaviour
+public class ComputerGamePlayManager : MonoBehaviour
 {
     [Header("Sound")]
     public AudioClip music_win_clip;
@@ -34,12 +34,12 @@ public class GamePlayManager : MonoBehaviour
     public GameObject menuButton;
 
     [Header("Player Setting")]
-    public List<Player> players;
-    public TextAsset multiplayerNames;
+    public List<ComPlayer> players;
+    //public TextAsset multiplayerNames;
     public TextAsset computerProfiles;
     public bool clockwiseTurn = true;
     public int currentPlayerIndex = 0;
-    public Player CurrentPlayer { get { return players[currentPlayerIndex]; } }
+    public ComPlayer CurrentPlayer { get { return players[currentPlayerIndex]; } }
 
     [Header("Game Over")]
     public GameObject gameOverPopup;
@@ -69,7 +69,7 @@ public class GamePlayManager : MonoBehaviour
     {
         get { return arrowObject.activeSelf; }
     }
-    public static GamePlayManager instance;
+    public static ComputerGamePlayManager instance;
 
     System.DateTime pauseTime;
     int fastForwardTime = 0;
@@ -84,11 +84,11 @@ public class GamePlayManager : MonoBehaviour
             SetTotalPlayer(4);
             SetupGame();
         }
-        else
+/*        else
         {
             StartCoroutine(CheckNetwork());
             playerChoose.ShowPopup();
-        }
+        }*/
     }
 
     public void OnPlayerSelect(ToggleGroup group)
@@ -163,38 +163,11 @@ public class GamePlayManager : MonoBehaviour
         currentPlayerIndex = Random.Range(0, players.Count);
         players[0].SetAvatarProfile(GameManager.PlayerAvatarProfile);
 
-        if (GameManager.currentGameMode == GameMode.MultiPlayer)
+        var profiles = JsonUtility.FromJson<AvatarProfiles>(computerProfiles.text).profiles;
+        for (int i = 0; i < profiles.Count; i++)
         {
-            string[] nameList = multiplayerNames.text.Split('\n');
-            List<int> indexes = new List<int>();
-
-            for (int i = 1; i < players.Count; i++)
-            {
-                while (true)
-                {
-                    int index = Random.Range(0, nameList.Length);
-                    var name = nameList[index].Trim();
-                    if (name.Length == 0) continue;
-
-                    if (!indexes.Contains(index))
-                    {
-                        indexes.Add(index);
-                        if (Random.value < LowercaseNameProbability / 100f) name = name.ToLower();
-                        players[i].SetAvatarProfile(new AvatarProfile { avatarIndex = index % GameManager.TOTAL_AVATAR, avatarName = name });
-                        break;
-                    }
-                }
-            }
+            players[i + 1].SetAvatarProfile(profiles[i]);
         }
-        else
-        {
-            var profiles = JsonUtility.FromJson<AvatarProfiles>(computerProfiles.text).profiles;
-            for (int i = 0; i < profiles.Count; i++)
-            {
-                players[i + 1].SetAvatarProfile(profiles[i]);
-            }
-        }
-
         CreateDeck();
         cards.Shuffle();
         StartCoroutine(DealCards(7));
@@ -261,7 +234,7 @@ public class GamePlayManager : MonoBehaviour
         CurrentPlayer.OnTurn();
     }
 
-    IEnumerator DealCardsToPlayer(Player p, int NoOfCard = 1, float delay = 0f)
+    IEnumerator DealCardsToPlayer(ComPlayer p, int NoOfCard = 1, float delay = 0f)
     {
         yield return new WaitForSeconds(delay);
         for (int t = 0; t < NoOfCard; t++)
@@ -271,7 +244,7 @@ public class GamePlayManager : MonoBehaviour
         }
     }
 
-    public Card PickCardFromDeck(Player p, bool updatePos = false)
+    public Card PickCardFromDeck(ComPlayer p, bool updatePos = false)
     {
         if (cards.Count == 0)
         {
@@ -299,7 +272,7 @@ public class GamePlayManager : MonoBehaviour
 
     }
 
-    public void PutCardToWastePile(Card c, Player p = null)
+    public void PutCardToWastePile(Card c, ComPlayer p = null)
     {
         if (p != null)
         {
@@ -513,14 +486,14 @@ public class GamePlayManager : MonoBehaviour
         GameManager.PlaySound(uno_btn_clip);
     }
 
-    public void ApplyUnoCharge(Player p)
+    public void ApplyUnoCharge(ComPlayer p)
     {
         DisableUnoBtn();
         CurrentPlayer.ShowMessage("Uno Charges");
         StartCoroutine(DealCardsToPlayer(p, 2, .3f));
     }
 
-    public void SetupGameOver()
+    public void SetupGameOver ()
     {
         gameOver = true;
 
@@ -591,7 +564,7 @@ public class GamePlayManager : MonoBehaviour
     }
 
 
-    IEnumerator CheckNetwork()
+/*    IEnumerator CheckNetwork()
     {
         while (true)
         {
@@ -621,6 +594,7 @@ public class GamePlayManager : MonoBehaviour
             yield return new WaitForSecondsRealtime(1f);
         }
     }
+*/
 
     void OnApplicationPause(bool pauseStatus)
     {
@@ -628,7 +602,7 @@ public class GamePlayManager : MonoBehaviour
         {
             pauseTime = System.DateTime.Now;
         }
-        else
+/*        else
         {
             if (GameManager.currentGameMode == GameMode.MultiPlayer && multiplayerLoaded && !gameOver)
             {
@@ -638,10 +612,10 @@ public class GamePlayManager : MonoBehaviour
                     StartCoroutine(DoFastForward());
                 }
             }
-        }
+        }*/
     }
 
-    IEnumerator DoFastForward()
+/*    IEnumerator DoFastForward()
     {
         Time.timeScale = 10f;
         rayCastBlocker.SetActive(true);
@@ -653,10 +627,10 @@ public class GamePlayManager : MonoBehaviour
         Time.timeScale = 1f;
         rayCastBlocker.SetActive(false);
 
-    }
+    }*/
 }
 
-[System.Serializable]
+/*[System.Serializable]
 public class AvatarProfile
 {
     public int avatarIndex;
@@ -666,4 +640,4 @@ public class AvatarProfile
 public class AvatarProfiles
 {
     public List<AvatarProfile> profiles;
-}
+}*/

@@ -85,17 +85,18 @@ public class HomeScene : MonoBehaviour
         }
 
         GameManager.IsFirstOpen = false;
-        GameManager.PlayerAvatarName = inputName;
+        GameManager.PlayerAvatarName = inputName; // Set player name here
         avatarSetting.SetActive(false);
         UpdateUI();
         GameManager.PlayButton();
     }
 
+
     public void OnComputerPlay()
     {
         GameManager.currentGameMode = GameMode.Computer;
         GameManager.PlayButton();
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("ComputerGameScene");
     }
 
     public void OnMultiPlayerPlay()
@@ -119,7 +120,7 @@ public class HomeScene : MonoBehaviour
     private void EnterMultiplayer()
     {
         GameManager.currentGameMode = GameMode.MultiPlayer;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("LOBBY");
     }
 
     public void HandleVideoRewarded()

@@ -9,6 +9,9 @@ using System;
 [ExecuteInEditMode]
 public class Card : MonoBehaviour, IPointerClickHandler
 {
+    // New: Unique ID for each card
+    public int cardID;
+
     public bool _isOpen = true;
     public bool _isClickable;
     public CardType _type;
@@ -25,26 +28,19 @@ public class Card : MonoBehaviour, IPointerClickHandler
 
     public CardType Type
     {
-        get
-        { return _type; }
-        set
-        {
-            _type = value;
-        }
+        get { return _type; }
+        set { _type = value; }
     }
+
     public CardValue Value
     {
-        get
-        { return _value; }
-        set
-        {
-            _value = value;
-        }
+        get { return _value; }
+        set { _value = value; }
     }
+
     public bool IsOpen
     {
-        get
-        { return _isOpen; }
+        get { return _isOpen; }
         set
         {
             _isOpen = value;
@@ -54,15 +50,10 @@ public class Card : MonoBehaviour, IPointerClickHandler
 
     public bool IsClickable
     {
-        get
-        {
-            return _isClickable;
-        }
-        set
-        {
-            _isClickable = value;
-        }
+        get { return _isClickable; }
+        set { _isClickable = value; }
     }
+
     public Action<Card> onClick;
 
     public void SetTargetPosAndRot(Vector3 pos, float rotZ)
@@ -144,11 +135,22 @@ public class Card : MonoBehaviour, IPointerClickHandler
             onClick.Invoke(this);
         }
     }
+
     public bool IsAllowCard()
     {
-        return Type == GamePlayManager.instance.CurrentType ||
-            Value == GamePlayManager.instance.CurrentValue ||
-            Type == CardType.Other;
+        if (GameManager.currentGameMode == GameMode.Computer)
+        {
+            return Type == ComputerGamePlayManager.instance.CurrentType ||
+                   Value == ComputerGamePlayManager.instance.CurrentValue ||
+                   Type == CardType.Other;
+        }
+        else
+        {
+            return Type == GamePlayManager.instance.CurrentType ||
+                   Value == GamePlayManager.instance.CurrentValue ||
+                   Type == CardType.Other;
+        }
+        
     }
 
     public void SetGaryColor(bool b)

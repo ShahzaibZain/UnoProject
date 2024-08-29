@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour
+public class ComPlayer : MonoBehaviour
 {
     public GameObject CardPanelBG;
     public PlayerCards cardsPanel;
@@ -74,13 +74,13 @@ public class Player : MonoBehaviour
             {
                 if (isUserPlayer)
                 {
-                    GamePlayManager.instance.colorChoose.HidePopup();
+                    ComputerGamePlayManager.instance.colorChoose.HidePopup();
                 }
                 ChooseBestColor();
             }
-            else if (GamePlayManager.instance.IsDeckArrow)
+            else if (ComputerGamePlayManager.instance.IsDeckArrow)
             {
-                GamePlayManager.instance.OnDeckClick();
+                ComputerGamePlayManager.instance.OnDeckClick();
             }
             else if (cardsPanel.AllowedCard.Count > 0)
             {
@@ -104,7 +104,7 @@ public class Player : MonoBehaviour
             UpdateCardColor();
             if (cardsPanel.AllowedCard.Count == 0)
             {
-                GamePlayManager.instance.EnableDeckClick();
+                ComputerGamePlayManager.instance.EnableDeckClick();
             }
         }
         else
@@ -129,11 +129,11 @@ public class Player : MonoBehaviour
             }
             if (cardsPanel.AllowedCard.Count > 0 && cardsPanel.cards.Count == 2)
             {
-                GamePlayManager.instance.EnableUnoBtn();
+                ComputerGamePlayManager.instance.EnableUnoBtn();
             }
             else
             {
-                GamePlayManager.instance.DisableUnoBtn();
+                ComputerGamePlayManager.instance.DisableUnoBtn();
             }
         }
     }
@@ -165,7 +165,7 @@ public class Player : MonoBehaviour
     {
         if (Timer)
         {
-            GamePlayManager.instance.PutCardToWastePile(c, this);
+            ComputerGamePlayManager.instance.PutCardToWastePile(c, this);
             OnTurnEnd();
         }
     }
@@ -200,8 +200,8 @@ public class Player : MonoBehaviour
         else
         {
             yield return new WaitForSeconds(Random.Range(1f, totalTimer * .3f));
-            GamePlayManager.instance.EnableDeckClick();
-            GamePlayManager.instance.OnDeckClick();
+            ComputerGamePlayManager.instance.EnableDeckClick();
+            ComputerGamePlayManager.instance.OnDeckClick();
 
             if (cardsPanel.AllowedCard.Count > 0)
             {
@@ -213,12 +213,12 @@ public class Player : MonoBehaviour
     private IEnumerator ComputerTurnHasCard(float unoCoef)
     {
         bool unoClick = false;
-        float unoPossibality = GamePlayManager.instance.UnoProbability / 100f;
+        float unoPossibality = ComputerGamePlayManager.instance.UnoProbability / 100f;
 
         if (Random.value < unoPossibality && cardsPanel.cards.Count == 2)
         {
             yield return new WaitForSeconds(Random.Range(1f, totalTimer * unoCoef));
-            GamePlayManager.instance.OnUnoClick();
+            ComputerGamePlayManager.instance.OnUnoClick();
             unoClick = true;
         }
 
@@ -255,14 +255,14 @@ public class Player : MonoBehaviour
 
         if (temp == CardType.Other)
         {
-            GamePlayManager.instance.SelectColor(Random.Range(1, 5));
+            ComputerGamePlayManager.instance.SelectColor(Random.Range(1, 5));
         }
         else
         {
             if (Random.value < 0.7f)
-                GamePlayManager.instance.SelectColor((int)temp);
+                ComputerGamePlayManager.instance.SelectColor((int)temp);
             else
-                GamePlayManager.instance.SelectColor(Random.Range(1, 5));
+                ComputerGamePlayManager.instance.SelectColor(Random.Range(1, 5));
         }
     }
 

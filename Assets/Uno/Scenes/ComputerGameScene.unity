@@ -5381,7 +5381,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 127133820}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec1812ecd6fef8c4cbde2f965e89e20d, type: 3}
   m_Name: 
@@ -5409,19 +5409,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 127133820}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: c416ec0261160004282f57b37499015a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 4
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  CardPanelBG: {fileID: 610732502}
+  cardsPanel: {fileID: 1208449910}
+  playerName: 
+  isUserPlayer: 0
+  avatarImage: {fileID: 1045427090}
+  avatarName: {fileID: 144855321}
+  messageLbl: {fileID: 376093631}
+  starParticleSystem: {fileID: 1938185179}
+  timerImage: {fileID: 1546747952}
+  timerOjbect: {fileID: 1174487135}
+  pickFromDeck: 0
+  unoClicked: 0
+  choosingColor: 0
+  isInRoom: 1
 --- !u!1 &129262518
 GameObject:
   m_ObjectHideFlags: 0
@@ -5608,7 +5612,7 @@ GameObject:
   - component: {fileID: 144639351}
   - component: {fileID: 144639353}
   - component: {fileID: 144639352}
-  - component: {fileID: 144639354}
+  - component: {fileID: 144639355}
   m_Layer: 5
   m_Name: GamePlay
   m_TagString: Untagged
@@ -5683,7 +5687,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 144639350}
   m_CullTransparentMesh: 1
---- !u!114 &144639354
+--- !u!114 &144639355
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5692,7 +5696,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 144639350}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed44aea429d2a904aa94f1a283ea2e60, type: 3}
+  m_Script: {fileID: 11500000, guid: 4315ac59ecc90ae4c959e0b5bb2ea5e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   music_win_clip: {fileID: 8300000, guid: 63595c3423f1176498e07ec3ad477b1a, type: 3}
@@ -5721,11 +5725,10 @@ MonoBehaviour:
   wildCardParticle: {fileID: 1408218706}
   menuButton: {fileID: 525378197}
   players:
-  - {fileID: 858389341}
-  - {fileID: 517660853}
-  - {fileID: 1751472361}
-  - {fileID: 127133822}
-  multiplayerNames: {fileID: 4900000, guid: 2418e74f1ae37d940913205bb663102c, type: 3}
+  - {fileID: 858389342}
+  - {fileID: 517660854}
+  - {fileID: 1751472362}
+  - {fileID: 127133823}
   computerProfiles: {fileID: 4900000, guid: d88b4cc1c04c8de43b4f6224a1612089, type: 3}
   clockwiseTurn: 1
   currentPlayerIndex: 0
@@ -8534,7 +8537,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517660851}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec1812ecd6fef8c4cbde2f965e89e20d, type: 3}
   m_Name: 
@@ -8562,19 +8565,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 517660851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: c416ec0261160004282f57b37499015a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 3
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  CardPanelBG: {fileID: 711634825}
+  cardsPanel: {fileID: 342853190}
+  playerName: 
+  isUserPlayer: 0
+  avatarImage: {fileID: 907422374}
+  avatarName: {fileID: 1905941286}
+  messageLbl: {fileID: 244153348}
+  starParticleSystem: {fileID: 1587659789}
+  timerImage: {fileID: 981384451}
+  timerOjbect: {fileID: 429832750}
+  pickFromDeck: 0
+  unoClicked: 0
+  choosingColor: 0
+  isInRoom: 1
 --- !u!1 &525378197
 GameObject:
   m_ObjectHideFlags: 0
@@ -9535,8 +9542,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 144639354}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 144639355}
+        m_TargetAssemblyTypeName: ComputerGamePlayManager, Assembly-CSharp
         m_MethodName: OnColorSelect
         m_Mode: 3
         m_Arguments:
@@ -10671,8 +10678,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 144639354}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 144639355}
+        m_TargetAssemblyTypeName: ComputerGamePlayManager, Assembly-CSharp
         m_MethodName: OnColorSelect
         m_Mode: 3
         m_Arguments:
@@ -11013,7 +11020,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 224112239984857588}
+  - {fileID: 2141667220}
   - {fileID: 909217439}
   - {fileID: 1511133241}
   m_Father: {fileID: 84415713}
@@ -11031,7 +11038,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 858389339}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec1812ecd6fef8c4cbde2f965e89e20d, type: 3}
   m_Name: 
@@ -11045,7 +11052,7 @@ MonoBehaviour:
   messageLbl: {fileID: 1373663363}
   starParticleSystem: {fileID: 2020271568}
   timerImage: {fileID: 909217440}
-  timerOjbect: {fileID: 1707971714921136}
+  timerOjbect: {fileID: 2141667219}
   pickFromDeck: 0
   unoClicked: 0
   choosingColor: 0
@@ -11059,19 +11066,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 858389339}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: c416ec0261160004282f57b37499015a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 2
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  CardPanelBG: {fileID: 1027432571}
+  cardsPanel: {fileID: 597396392}
+  playerName: 
+  isUserPlayer: 1
+  avatarImage: {fileID: 357249319}
+  avatarName: {fileID: 0}
+  messageLbl: {fileID: 1373663363}
+  starParticleSystem: {fileID: 2020271568}
+  timerImage: {fileID: 909217440}
+  timerOjbect: {fileID: 2141667219}
+  pickFromDeck: 0
+  unoClicked: 0
+  choosingColor: 0
+  isInRoom: 1
 --- !u!1 &866330292
 GameObject:
   m_ObjectHideFlags: 0
@@ -11650,8 +11661,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 144639354}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 144639355}
+        m_TargetAssemblyTypeName: ComputerGamePlayManager, Assembly-CSharp
         m_MethodName: OnColorSelect
         m_Mode: 3
         m_Arguments:
@@ -12949,6 +12960,105 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1137812236}
   m_CullTransparentMesh: 1
+--- !u!1001 &1156226506
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 858389340}
+    m_Modifications:
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b00f13c52a8a15c4ab8084110d942839, type: 3}
 --- !u!1 &1174487135
 GameObject:
   m_ObjectHideFlags: 0
@@ -25700,8 +25810,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 144639354}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 144639355}
+        m_TargetAssemblyTypeName: ComputerGamePlayManager, Assembly-CSharp
         m_MethodName: OnDeckClick
         m_Mode: 1
         m_Arguments:
@@ -25760,7 +25870,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1751472359}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec1812ecd6fef8c4cbde2f965e89e20d, type: 3}
   m_Name: 
@@ -25788,19 +25898,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1751472359}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: c416ec0261160004282f57b37499015a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 1
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  CardPanelBG: {fileID: 129262518}
+  cardsPanel: {fileID: 575846154}
+  playerName: 
+  isUserPlayer: 0
+  avatarImage: {fileID: 1793613468}
+  avatarName: {fileID: 973637896}
+  messageLbl: {fileID: 1224012219}
+  starParticleSystem: {fileID: 107769522}
+  timerImage: {fileID: 1055863938}
+  timerOjbect: {fileID: 1079100153}
+  pickFromDeck: 0
+  unoClicked: 0
+  choosingColor: 0
+  isInRoom: 1
 --- !u!1 &1764840898
 GameObject:
   m_ObjectHideFlags: 0
@@ -26019,7 +26133,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 144639354}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: OnUnoClick
         m_Mode: 1
@@ -31356,7 +31470,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 144639354}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: OnPlayerSelect
         m_Mode: 2
@@ -42260,8 +42374,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 144639354}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 144639355}
+        m_TargetAssemblyTypeName: ComputerGamePlayManager, Assembly-CSharp
         m_MethodName: OnColorSelect
         m_Mode: 3
         m_Arguments:
@@ -42914,100 +43028,15 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1707971714921136
+--- !u!1 &2141667219 stripped
 GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 1707972727156602, guid: b00f13c52a8a15c4ab8084110d942839,
+    type: 3}
+  m_PrefabInstance: {fileID: 1156226506}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 224112239984857588}
-  - component: {fileID: 222975459753029046}
-  - component: {fileID: 114065220587309918}
-  - component: {fileID: 95325338369199380}
-  m_Layer: 5
-  m_Name: TimerAnimation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!95 &95325338369199380
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707971714921136}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f70cba93e7bdd5e488b25bfccf58cae7, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114065220587309918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707971714921136}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.5735294, g: 0.46444905, b: 0.12651382, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 46968bf46a401764a9bb4a165ea22367, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 0.54
-  m_FillClockwise: 0
-  m_FillOrigin: 2
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &222975459753029046
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707971714921136}
-  m_CullTransparentMesh: 1
---- !u!224 &224112239984857588
+--- !u!224 &2141667220 stripped
 RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 224112241005808702, guid: b00f13c52a8a15c4ab8084110d942839,
+    type: 3}
+  m_PrefabInstance: {fileID: 1156226506}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707971714921136}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 858389340}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 10, y: 10}
-  m_Pivot: {x: 0.5, y: 0.5}

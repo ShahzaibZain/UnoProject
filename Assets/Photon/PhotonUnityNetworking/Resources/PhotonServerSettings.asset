@@ -45,6 +45,9 @@ MonoBehaviour:
   - SynchronizeCardAddition
   - SynchronizeCardRemoval
   - LoadGameSceneForAll
+  - PutCardToWastePileForAll
+  - SetNextTurn
+  - OnStartTurn
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
