@@ -101,7 +101,7 @@ public class HomeScene : MonoBehaviour
 
     public void OnMultiPlayerPlay()
     {
-        if (IsAdAvailable())
+/*        if (IsAdAvailable())
         {
 #if UNITY_EDITOR
             HandleVideoRewarded();
@@ -110,10 +110,9 @@ public class HomeScene : MonoBehaviour
             AdmobController.instance.ShowRewardedAd();
 #endif
         }
-        else
-        {
-            EnterMultiplayer();
-        }
+        else*/
+        
+        EnterMultiplayer();
         GameManager.PlayButton();
     }
 
@@ -128,14 +127,14 @@ public class HomeScene : MonoBehaviour
         EnterMultiplayer();
     }
 
-    private bool IsAdAvailable()
+/*    private bool IsAdAvailable()
     {
 #if UNITY_ANDROID || UNITY_IOS
         return AdmobController.instance.rewardedAd.IsLoaded();
 #else
         return true;
 #endif
-    }
+    }*/
 
     private void Update()
     {

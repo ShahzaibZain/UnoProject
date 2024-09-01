@@ -1,63 +1,30 @@
-/*using System.Collections.Generic;
-using UnityEngine;
 using Photon.Pun;
+using UnityEngine;
 
-public class PlayerManager : MonoBehaviourPunCallbacks
+public class PlayerManager : MonoBehaviourPunCallbacks 
 {
-    [Header("Player Positions")]
-    public Transform[] playerPositions; // Array of positions (bottom, top, left, right)
-
-    private List<Transform> availablePositions;
-    private Dictionary<int, Transform> playerPositionMap = new Dictionary<int, Transform>();
+    public GameObject[] playerGameObjects; // Assign Player1 to Player4 in the editor
+    public GameObject[] playerCardsGameObjects; // Assign Player1BG to Player4BG in the editor
 
     void Start()
     {
-        availablePositions = new List<Transform>(playerPositions);
-
         if (PhotonNetwork.IsConnected)
         {
-            AssignPlayerPosition();
+            AssignPlayerToUI();
         }
     }
 
-    void AssignPlayerPosition()
+    void AssignPlayerToUI()
     {
-        // Get the player's index in the room (PhotonNetwork.LocalPlayer.ActorNumber - 1) to maintain consistent order
         int playerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
 
-        // Assign the local player to the bottom position (Player1) and others accordingly
-        if (PhotonNetwork.LocalPlayer.IsMasterClient)
-        {
-            // Local player is the master client and always gets the bottom position
-            AssignPositionToPlayer(0, playerIndex);
-        }
-        else
-        {
-            // Other players get remaining positions in the order they join
-            AssignPositionToPlayer(playerIndex, playerIndex);
-        }
+        Player playerScript = playerGameObjects[playerIndex].GetComponent<Player>();
+        playerScript.isUserPlayer = true;
 
-        // Notify GameplayManager to set up the player in the assigned position
-        GameObject playerObject = PhotonNetwork.Instantiate("PlayerPrefab", Vector3.zero, Quaternion.identity);
-        playerObject.transform.position = playerPositionMap[playerIndex].position;
+        // Set up the player's UI elements (e.g., assigning cards panel, etc.)
+        playerScript.cardsPanel = playerCardsGameObjects[playerIndex].GetComponent<PlayerCards>();
 
-        // Set the UI for the player and register it in the GameplayManager
-        playerObject.GetComponent<PlayerUI>().SetPlayerUI($"Player{playerIndex + 1}");
-        if (PhotonNetwork.LocalPlayer.ActorNumber == playerIndex + 1)
-        {
-            GamePlayManager.instance.SetLocalPlayer(playerObject, playerPositionMap[playerIndex]);
-        }
-        else
-        {
-            GamePlayManager.instance.SetOtherPlayer(playerObject, playerPositionMap[playerIndex]);
-        }
-    }
-
-    void AssignPositionToPlayer(int positionIndex, int playerIndex)
-    {
-        // Assigns a player position and removes it from the available positions
-        playerPositionMap[playerIndex] = availablePositions[positionIndex];
-        availablePositions.RemoveAt(positionIndex);
+        // You can also assign the player's name, avatar, etc., here.
+        playerScript.SetAvatarProfile(GameManager.PlayerAvatarProfile);
     }
 }
-*/

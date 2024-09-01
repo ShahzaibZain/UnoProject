@@ -4,11 +4,13 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
     [Header("UI References")]
     public TMP_InputField createInputField;
+    public TMP_InputField joinInputField;
     public Button createButton;
     public TextMeshProUGUI statusText;
     public GameObject roomButtonPrefab;
@@ -21,11 +23,16 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        PhotonNetwork.Disconnect();
         SetUIInteractable(false);
         statusText.text = "Connecting to Photon...";
         PhotonNetwork.ConnectUsingSettings();
     }
 
+    public void GoToHome()
+    {
+        SceneManager.LoadScene("HomeScene");
+    }
     public override void OnConnectedToMaster()
     {
         statusText.text = "Connected to Master Server. You can now create or join a room.";
@@ -101,6 +108,19 @@ public class RoomManager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(roomName);
     }
 
+    public void JoinRoom()
+    {
+        string roomName = joinInputField.text;
+        if (string.IsNullOrEmpty(roomName))
+        {
+            statusText.text = "Room name cannot be empty!";
+            return;
+        }
+
+        SetUIInteractable(false);
+        statusText.text = $"Joining Room '{roomName}'...";
+        PhotonNetwork.JoinRoom(roomName);
+    }
     public override void OnJoinedRoom()
     {
         statusText.text = $"Joined Room: {PhotonNetwork.CurrentRoom.Name}.";

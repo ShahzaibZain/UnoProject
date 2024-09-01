@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,8 +16,6 @@ public class GamePlayManager : MonoBehaviour
     public AudioClip choose_color_clip;
 
     [Header("Gameplay")]
-    [Range(0, 100)]
-    public int LeftRoomProbability = 10;
     [Range(0, 100)]
     public int UnoProbability = 70;
     [Range(0, 100)]
@@ -75,32 +74,65 @@ public class GamePlayManager : MonoBehaviour
     int fastForwardTime = 0;
     bool setup = false, multiplayerLoaded = false, gameOver = false;
 
-    void Start()
+    public Transform[] spawnPositions;  // Assign spawn positions in the inspector
+    public GameObject playerPrefab;  // Assign the PlayerPrefab in the inspector
+    private PhotonView photonView;
+
+    private void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
+    private void Start()
+    {
+        photonView.RPC("StartMethod", RpcTarget.MasterClient);
+        StartCoroutine(StartMultiPlayerGameMode());
+    }
+
+    [PunRPC]
+    void StartMethod()
     {
         instance = this;
         Input.multiTouchEnabled = false;
-        if (GameManager.currentGameMode == GameMode.Computer)
+
+        Time.timeScale = 1;
+        OnApplicationPause(false);
+        //StartCoroutine(CheckNetwork());
+        CreatePlayerMethod(); 
+        SetPlayersInGameplay();
+    }
+
+    void CreatePlayerMethod()
+    {
+        if (PhotonNetwork.IsConnectedAndReady)
         {
-            SetTotalPlayer(4);
-            SetupGame();
-        }
-        else
-        {
-            StartCoroutine(CheckNetwork());
-            playerChoose.ShowPopup();
+            // Ensure joinedPlayers is within bounds and that there are enough spawn positions
+            int joinedPlayers = StartGameButton.joinedPlayers;
+            joinedPlayers = Mathf.Clamp(joinedPlayers, 1, spawnPositions.Length);
+
+            int playerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
+            playerIndex = Mathf.Clamp(playerIndex, 0, joinedPlayers - 1);
+
+            Transform spawnPosition = spawnPositions[playerIndex];  // Choose a spawn position based on player index
+
+            // Instantiate the player at the designated spawn position
+            GameObject playerInstance = PhotonNetwork.Instantiate(playerPrefab.name, spawnPosition.position, spawnPosition.rotation);
+            
+            // Set the instantiated player as a child of the GameObject that this script is attached to
+            playerInstance.transform.SetParent(this.transform, false);
+            playerInstance.transform.localScale = Vector3.one;
         }
     }
 
-    public void OnPlayerSelect(ToggleGroup group)
+    void SetPlayersInGameplay()
     {
-        playerChoose.HidePopup(false);
-        int i = 4;
-        foreach (var t in group.ActiveToggles())
+        Player[] Players = FindObjectsOfType<Player>();  
+
+        foreach (var player in Players)
         {
-            i = int.Parse(t.name);
+            player.transform.SetParent(this.transform, false); 
+            player.transform.localScale = Vector3.one;
+            players.Add(player);
         }
-        StartCoroutine(StartMultiPlayerGameMode(i));
-        GameManager.PlayButton();
     }
 
     IEnumerator StartMultiPlayerGameMode(int i)
@@ -111,13 +143,17 @@ public class GamePlayManager : MonoBehaviour
         SetTotalPlayer(i);
         SetupGame();
 
-        bool leftRoom = Random.Range(0, 100) <= LeftRoomProbability && players.Count > 2;
-        if (leftRoom)
-        {
-            float inTime = Random.Range(7, 5 * 60);
-            StartCoroutine(RemovePlayerFromRoom(inTime));
-        }
+        multiplayerLoaded = true;
+    }
 
+    IEnumerator StartMultiPlayerGameMode()
+    {
+        loadingView.SetActive(true);
+        yield return new WaitForSeconds(Random.Range(3f, 10f));
+        loadingView.SetActive(false);
+        cardDeckBtn.SetActive(true);
+        cardWastePile.gameObject.SetActive(true);
+        SetupGame();
         multiplayerLoaded = true;
     }
 
@@ -157,6 +193,7 @@ public class GamePlayManager : MonoBehaviour
         }
     }
 
+
     void SetupGame()
     {
         menuButton.SetActive(true);
@@ -186,20 +223,13 @@ public class GamePlayManager : MonoBehaviour
                 }
             }
         }
-        else
-        {
-            var profiles = JsonUtility.FromJson<AvatarProfiles>(computerProfiles.text).profiles;
-            for (int i = 0; i < profiles.Count; i++)
-            {
-                players[i + 1].SetAvatarProfile(profiles[i]);
-            }
-        }
 
         CreateDeck();
         cards.Shuffle();
         StartCoroutine(DealCards(7));
     }
 
+    [PunRPC]
     void CreateDeck()
     {
         cards = new List<Card>();

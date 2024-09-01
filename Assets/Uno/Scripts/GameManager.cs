@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,11 +11,13 @@ public class GameManager : MonoBehaviour
     public AudioClip buttonClip;
     public static AudioClip _buttonClip;
 
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
         _buttonClip = buttonClip;
     }
+
 
     public static void PlaySound(AudioClip clip)
     {
@@ -24,7 +27,6 @@ public class GameManager : MonoBehaviour
         }
         if (IsSound)
             audioSource.PlayOneShot(clip);
-
     }
 
     public static void PlayButton()

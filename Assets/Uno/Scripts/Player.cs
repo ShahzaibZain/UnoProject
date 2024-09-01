@@ -107,10 +107,6 @@ public class Player : MonoBehaviour
                 GamePlayManager.instance.EnableDeckClick();
             }
         }
-        else
-        {
-            StartCoroutine(DoComputerTurn());
-        }
     }
 
     public void UpdateCardColor()
@@ -191,7 +187,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public IEnumerator DoComputerTurn()
+/*    public IEnumerator DoComputerTurn()
     {
         if (cardsPanel.AllowedCard.Count > 0)
         {
@@ -208,9 +204,9 @@ public class Player : MonoBehaviour
                 StartCoroutine(ComputerTurnHasCard(0.2f));
             }
         }
-    }
+    }*/
 
-    private IEnumerator ComputerTurnHasCard(float unoCoef)
+/*    private IEnumerator ComputerTurnHasCard(float unoCoef)
     {
         bool unoClick = false;
         float unoPossibality = GamePlayManager.instance.UnoProbability / 100f;
@@ -224,7 +220,7 @@ public class Player : MonoBehaviour
 
         yield return new WaitForSeconds(Random.Range(1f, totalTimer * (unoClick ? unoCoef : unoCoef * 2)));
         OnCardClick(FindBestPutCard());
-    }
+    }*/
 
     public Card FindBestPutCard()
     {
