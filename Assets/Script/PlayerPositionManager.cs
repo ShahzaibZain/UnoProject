@@ -6,18 +6,15 @@ public class PlayerPositionManager : MonoBehaviourPunCallbacks
     public GameObject playerPrefab;  // Reference to the player prefab
     public Transform[] playerPositions;  // Positions where player prefabs should be placed (Bottom, Left, Top, Right)
     public GamePlayManager gamePlayManager;
-    public void StartMethod()
+    public void Start()
     {
-        if (photonView.IsMine)
-        {
-            int playerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;  // Get player index based on joining order
+        int playerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;  // Get player index based on joining order
 
-            // Assign the local player to an available position
-            photonView.RPC("AssignPlayerPosition", RpcTarget.AllBuffered, playerIndex);
-        }
+        // Assign the local player to an available position
+        //photonView.RPC("AssignPlayerPosition", RpcTarget.AllBuffered, playerIndex);
+        AssignPlayerPosition(playerIndex);
     }
 
-    [PunRPC]
     private void AssignPlayerPosition(int playerIndex)
     {
         if (playerIndex < playerPositions.Length && playerPositions[playerIndex].childCount == 0)

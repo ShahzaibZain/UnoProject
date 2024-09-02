@@ -87,7 +87,7 @@ public class GamePlayManager : MonoBehaviour
         OnApplicationPause(false);
 
         // Sync all players in the game scene
-        playerPositionManager.StartMethod();
+        //playerPositionManager.StartMethod();
         StartCoroutine(StartMultiPlayerGameMode());
     }
 

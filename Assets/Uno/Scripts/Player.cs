@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
+        
     }
     void Start()
     {
