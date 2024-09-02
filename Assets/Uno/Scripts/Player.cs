@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ public class Player : MonoBehaviour
     public GameObject CardPanelBG;
     public PlayerCards cardsPanel;
     public string playerName;
-    public bool isUserPlayer; // Flag to identify the local user player
+    public bool isUserPlayer = false; // Flag to identify the local user player
     public Image avatarImage;
     public Text avatarName;
     public Text messageLbl;
@@ -23,9 +24,18 @@ public class Player : MonoBehaviour
     public bool pickFromDeck, unoClicked, choosingColor;
     [HideInInspector]
     public bool isInRoom = true;
+    private PhotonView photonView;
 
+    private void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
     void Start()
     {
+        if (photonView.IsMine)
+        {
+            isUserPlayer = true;  // Local player controls this instance
+        }
         Timer = false;
         // Initialize card visibility based on whether this is the user player
         UpdateCardVisibility();

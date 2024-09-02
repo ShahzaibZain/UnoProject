@@ -74,66 +74,65 @@ public class GamePlayManager : MonoBehaviour
     int fastForwardTime = 0;
     bool setup = false, multiplayerLoaded = false, gameOver = false;
 
-    public Transform[] spawnPositions;  // Assign spawn positions in the inspector
+    //public Transform[] spawnPositions;  // Assign spawn positions in the inspector
     public GameObject playerPrefab;  // Assign the PlayerPrefab in the inspector
-    private PhotonView photonView;
 
-    private void Awake()
-    {
-        photonView = GetComponent<PhotonView>();
-    }
+    public PlayerPositionManager playerPositionManager;
+
     private void Start()
-    {
-        photonView.RPC("StartMethod", RpcTarget.MasterClient);
-        StartCoroutine(StartMultiPlayerGameMode());
-    }
-
-    [PunRPC]
-    void StartMethod()
     {
         instance = this;
         Input.multiTouchEnabled = false;
-
         Time.timeScale = 1;
         OnApplicationPause(false);
-        //StartCoroutine(CheckNetwork());
-        CreatePlayerMethod(); 
-        SetPlayersInGameplay();
+
+        // Sync all players in the game scene
+        playerPositionManager.StartMethod();
+        StartCoroutine(StartMultiPlayerGameMode());
     }
 
     void CreatePlayerMethod()
     {
-        if (PhotonNetwork.IsConnectedAndReady)
+        /*if (PhotonNetwork.IsConnectedAndReady)
         {
-            // Ensure joinedPlayers is within bounds and that there are enough spawn positions
-            int joinedPlayers = StartGameButton.joinedPlayers;
-            joinedPlayers = Mathf.Clamp(joinedPlayers, 1, spawnPositions.Length);
-
             int playerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
-            playerIndex = Mathf.Clamp(playerIndex, 0, joinedPlayers - 1);
+            playerIndex = Mathf.Clamp(playerIndex, 0, spawnPositions.Length - 1);
 
             Transform spawnPosition = spawnPositions[playerIndex];  // Choose a spawn position based on player index
 
             // Instantiate the player at the designated spawn position
             GameObject playerInstance = PhotonNetwork.Instantiate(playerPrefab.name, spawnPosition.position, spawnPosition.rotation);
-            
+
             // Set the instantiated player as a child of the GameObject that this script is attached to
             playerInstance.transform.SetParent(this.transform, false);
             playerInstance.transform.localScale = Vector3.one;
-        }
+
+            // Set ownership for the local player
+            playerInstance.GetComponent<Player>().GetComponentInParent<PhotonView>().RequestOwnership();
+        }*/
     }
 
-    void SetPlayersInGameplay()
+/*    void SetPlayersInGameplay()
     {
-        Player[] Players = FindObjectsOfType<Player>();  
+        Player[] playersInScene = FindObjectsOfType<Player>();
 
-        foreach (var player in Players)
+        foreach (var player in playersInScene)
         {
-            player.transform.SetParent(this.transform, false); 
-            player.transform.localScale = Vector3.one;
             players.Add(player);
+
+            // Ensure each player only controls their own character
+            if (player.GetComponentInParent<PhotonView>().IsMine)
+            {
+                player.isUserPlayer = true;  // Local player controls this instance
+            }
+            else
+            {
+                player.isUserPlayer = false;  // Other players' instances
+            }
         }
-    }
+    }*/
+
+
 
     IEnumerator StartMultiPlayerGameMode(int i)
     {
@@ -145,6 +144,7 @@ public class GamePlayManager : MonoBehaviour
 
         multiplayerLoaded = true;
     }
+
 
     IEnumerator StartMultiPlayerGameMode()
     {
