@@ -68,13 +68,25 @@ public class GamePlayManager : MonoBehaviour
     bool setup = false, multiplayerLoaded = false, gameOver = false;
 
     public GameObject playerPrefab;  // Assign the PlayerPrefab in the inspector
+    public PhotonView photonView;
 
+    private void Awake()
+    {
+        //PhotonNetwork.AutomaticallySyncScene = true;
+    }
     private void Start()
     {
         instance = this;
         Input.multiTouchEnabled = false;
         Time.timeScale = 1;
         OnApplicationPause(false);
+        //photonView.RPC("MultiplayerGameModeMethod", RpcTarget.MasterClient);
+        StartCoroutine(StartMultiPlayerGameMode());
+    }
+
+    [PunRPC]
+    void MultiplayerGameModeMethod()
+    {
         StartCoroutine(StartMultiPlayerGameMode());
     }
 
@@ -93,7 +105,7 @@ public class GamePlayManager : MonoBehaviour
     {
         menuButton.SetActive(true);
         currentPlayerIndex = Random.Range(0, players.Count);
-        players[0].SetAvatarProfile(GameManager.PlayerAvatarProfile);
+        //players[0].SetAvatarProfile(GameManager.PlayerAvatarProfile);
 
         CreateDeck();
         cards.Shuffle();
@@ -236,7 +248,7 @@ public class GamePlayManager : MonoBehaviour
                 }
                 else
                 {
-                    Invoke("ChooseColorforAI", Random.Range(3f, 9f));
+                    //Invoke("ChooseColorforAI", Random.Range(3f, 9f));
                 }
             }
             else
@@ -283,10 +295,38 @@ public class GamePlayManager : MonoBehaviour
         return (x % m + m) % m;
     }
 
-    public void NextPlayerTurn()
+/*    public void NextPlayerTurn()
     {
         NextPlayerIndex();
         CurrentPlayer.OnTurn();
+    }*/
+
+    public void NextPlayerTurn()
+    {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
+        photonView.RPC("SetPlayerTurn", RpcTarget.All, currentPlayerIndex);
+    }
+
+    [PunRPC]
+    void SetPlayerTurn(int playerIndex)
+    {
+        currentPlayerIndex = playerIndex;
+        players[currentPlayerIndex].OnTurn();
+    }
+
+    public void OnCardPlayed(Card card, Player player)
+    {
+        photonView.RPC("RPC_OnCardPlayed", RpcTarget.All, card.GetComponent<PhotonView>().ViewID, player.photonView.ViewID);
+    }
+
+    [PunRPC]
+    void RPC_OnCardPlayed(int cardViewID, int playerViewID)
+    {
+        Card playedCard = PhotonView.Find(cardViewID).GetComponent<Card>();
+        Player player = PhotonView.Find(playerViewID).GetComponent<Player>();
+
+        PutCardToWastePile(playedCard, player);
+        player.OnTurnEnd();
     }
 
     public void OnColorSelect(int i)

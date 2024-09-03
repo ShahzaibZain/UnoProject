@@ -24,15 +24,19 @@ public class Player : MonoBehaviour
     public bool pickFromDeck, unoClicked, choosingColor;
     [HideInInspector]
     public bool isInRoom = true;
-    private PhotonView photonView;
+    public PhotonView photonView;
+    public GamePlayManager GamePlayManager;
 
     private void Awake()
     {
+        GamePlayManager = FindObjectOfType<GamePlayManager>();
         photonView = GetComponent<PhotonView>();
-        
+
     }
     void Start()
     {
+        SetAvatarProfile(GameManager.PlayerAvatarProfile);
+        isUserPlayer = false;
         if (photonView.IsMine)
         {
             isUserPlayer = true;  // Local player controls this instance
@@ -40,6 +44,7 @@ public class Player : MonoBehaviour
         Timer = false;
         // Initialize card visibility based on whether this is the user player
         UpdateCardVisibility();
+        GamePlayManager.players.Add(this);
     }
 
     public void SetAvatarProfile(AvatarProfile p)
@@ -95,10 +100,12 @@ public class Player : MonoBehaviour
             }
             else if (cardsPanel.AllowedCard.Count > 0)
             {
+                //photonView.RPC("OnCardClick", RpcTarget.AllBuffered, FindBestPutCard());
                 OnCardClick(FindBestPutCard());
             }
             else
             {
+                //photonView.RPC("OnTurnEnd", RpcTarget.AllBuffered);
                 OnTurnEnd();
             }
         }
@@ -173,6 +180,7 @@ public class Player : MonoBehaviour
         if (Timer)
         {
             GamePlayManager.instance.PutCardToWastePile(c, this);
+            //photonView.RPC("OnTurnEnd", RpcTarget.AllBuffered);
             OnTurnEnd();
         }
     }
@@ -197,41 +205,6 @@ public class Player : MonoBehaviour
             starParticleSystem.Emit(30);
         }
     }
-
-/*    public IEnumerator DoComputerTurn()
-    {
-        if (cardsPanel.AllowedCard.Count > 0)
-        {
-            StartCoroutine(ComputerTurnHasCard(0.25f));
-        }
-        else
-        {
-            yield return new WaitForSeconds(Random.Range(1f, totalTimer * .3f));
-            GamePlayManager.instance.EnableDeckClick();
-            GamePlayManager.instance.OnDeckClick();
-
-            if (cardsPanel.AllowedCard.Count > 0)
-            {
-                StartCoroutine(ComputerTurnHasCard(0.2f));
-            }
-        }
-    }*/
-
-/*    private IEnumerator ComputerTurnHasCard(float unoCoef)
-    {
-        bool unoClick = false;
-        float unoPossibality = GamePlayManager.instance.UnoProbability / 100f;
-
-        if (Random.value < unoPossibality && cardsPanel.cards.Count == 2)
-        {
-            yield return new WaitForSeconds(Random.Range(1f, totalTimer * unoCoef));
-            GamePlayManager.instance.OnUnoClick();
-            unoClick = true;
-        }
-
-        yield return new WaitForSeconds(Random.Range(1f, totalTimer * (unoClick ? unoCoef : unoCoef * 2)));
-        OnCardClick(FindBestPutCard());
-    }*/
 
     public Card FindBestPutCard()
     {

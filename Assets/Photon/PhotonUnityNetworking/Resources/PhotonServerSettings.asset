@@ -54,6 +54,13 @@ MonoBehaviour:
   - AssignPlayerPosition
   - InformNetworkOfPlayerJoining
   - InstantiateAtPosition
+  - OnCardClick
+  - OnTurnEnd
+  - MultiplayerGameModeMethod
+  - InformClientsAboutPosition
+  - InstantiatePlayerAtPosition
+  - SetPlayerTurn
+  - RPC_OnCardPlayed
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

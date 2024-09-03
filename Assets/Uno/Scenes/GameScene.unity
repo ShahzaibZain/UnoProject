@@ -481,7 +481,6 @@ GameObject:
   - component: {fileID: 144639353}
   - component: {fileID: 144639352}
   - component: {fileID: 144639354}
-  - component: {fileID: 144639355}
   m_Layer: 5
   m_Name: GamePlay
   m_TagString: Untagged
@@ -508,6 +507,10 @@ RectTransform:
   - {fileID: 1770561383}
   - {fileID: 65167660}
   - {fileID: 543103010}
+  - {fileID: 844673265}
+  - {fileID: 1519133630}
+  - {fileID: 184817217}
+  - {fileID: 664401065}
   - {fileID: 431016701}
   m_Father: {fileID: 689146891}
   m_RootOrder: 0
@@ -574,7 +577,7 @@ MonoBehaviour:
   uno_btn_clip: {fileID: 8300000, guid: 49494aa86806ab64dbd0848d780a8a4c, type: 3}
   choose_color_clip: {fileID: 8300000, guid: 49494aa86806ab64dbd0848d780a8a4c, type: 3}
   cardDealTime: 0.05
-  _cardPrefab: {fileID: 114756711530414106, guid: e67b06ab6c5e47543b7e3c0ab65c8369,
+  _cardPrefab: {fileID: 114756711530414106, guid: e86385f28a6913d49b74080aa0d88b86,
     type: 3}
   cardDeckTransform: {fileID: 1519604161}
   cardWastePile: {fileID: 508633655}
@@ -602,30 +605,9 @@ MonoBehaviour:
   loseTimerAnimation: {fileID: 1899092842}
   _currentType: 0
   _currentValue: 0
-  playerPrefab: {fileID: 829647996732032486, guid: fee619b909d4a58409d23fc766a58f85,
+  playerPrefab: {fileID: 4282314486222402872, guid: fee619b909d4a58409d23fc766a58f85,
     type: 3}
---- !u!114 &144639355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 144639350}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 1
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  photonView: {fileID: 0}
 --- !u!1 &160677372
 GameObject:
   m_ObjectHideFlags: 0
@@ -788,13 +770,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 184817216}
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000005, y: 1.0000005, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 431016701}
-  m_RootOrder: 2
+  m_Father: {fileID: 144639351}
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -2075,13 +2057,9 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 844673265}
-  - {fileID: 1519133630}
-  - {fileID: 184817217}
-  - {fileID: 664401065}
+  m_Children: []
   m_Father: {fileID: 144639351}
-  m_RootOrder: 7
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2101,11 +2079,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gamePlayManager: {fileID: 144639354}
-  Position1: {fileID: 844673264}
-  Position2: {fileID: 1519133629}
-  Position3: {fileID: 184817216}
-  Position4: {fileID: 664401064}
-  PlayerPrefab: {fileID: 4282314486222402872, guid: fee619b909d4a58409d23fc766a58f85,
+  playerPositions:
+  - {fileID: 844673265}
+  - {fileID: 1519133630}
+  - {fileID: 184817217}
+  - {fileID: 664401065}
+  playerPrefab: {fileID: 4282314486222402872, guid: fee619b909d4a58409d23fc766a58f85,
     type: 3}
 --- !u!114 &431016703
 MonoBehaviour:
@@ -2116,19 +2095,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 431016700}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: 09671db8bf8a09c4cae20792a0e7251c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 2
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  JoinedPlayers: []
+  PlayerPositions:
+  - {fileID: 844673265}
+  - {fileID: 1519133630}
+  - {fileID: 184817217}
+  - {fileID: 664401065}
 --- !u!1 &445830915
 GameObject:
   m_ObjectHideFlags: 0
@@ -2939,7 +2914,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 1
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
@@ -3940,13 +3915,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 664401064}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 431016701}
-  m_RootOrder: 3
+  m_Father: {fileID: 144639351}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -5033,13 +5008,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 844673264}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 431016701}
-  m_RootOrder: 0
+  m_Father: {fileID: 144639351}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -12709,13 +12684,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1519133629}
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 431016701}
-  m_RootOrder: 1
+  m_Father: {fileID: 144639351}
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -12731,6 +12706,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1519604161}
+  - component: {fileID: 1519604162}
   m_Layer: 5
   m_Name: CardDeckContainer
   m_TagString: Untagged
@@ -12758,6 +12734,28 @@ RectTransform:
   m_AnchoredPosition: {x: -250, y: 30}
   m_SizeDelta: {x: 105, y: 152}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1519604162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1519604160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1557250036
 GameObject:
   m_ObjectHideFlags: 0

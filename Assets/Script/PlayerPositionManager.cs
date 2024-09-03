@@ -1,35 +1,52 @@
-/*using Photon.Pun;
+using Photon.Pun;
 using UnityEngine;
 
 public class PlayerPositionManager : MonoBehaviourPunCallbacks
 {
-    public GameObject playerPrefab;  // Reference to the player prefab
-    public Transform[] playerPositions;  // Positions where player prefabs should be placed (Bottom, Left, Top, Right)
-    public GamePlayManager gamePlayManager;
-    public void Start()
-    {
-        int playerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;  // Get player index based on joining order
+    public GameObject[] JoinedPlayers;
+    public Transform[] PlayerPositions;
 
-        // Assign the local player to an available position
-        //photonView.RPC("AssignPlayerPosition", RpcTarget.AllBuffered, playerIndex);
-        AssignPlayerPosition(playerIndex);
+    private void Start()
+    {
+        //add all gameobjects with Player component to JoinedPlayers
+        Player[] allPlayers = FindObjectsOfType<Player>();
+        JoinedPlayers = new GameObject[allPlayers.Length];
+
+        for (int i = 0; i < allPlayers.Length; i++)
+        {
+            if (allPlayers[i].GetComponent<Player>() != null)
+            {
+                JoinedPlayers[i] = allPlayers[i].gameObject;
+            }
+        }
+
+        if (PhotonNetwork.IsConnected)
+        {
+            // Ensure positions are assigned when all players have joined
+            AssignPlayerPositions();
+        }
     }
 
-    private void AssignPlayerPosition(int playerIndex)
+    private void AssignPlayerPositions()
     {
-        if (playerIndex < playerPositions.Length && playerPositions[playerIndex].childCount == 0)
+        // Ensure all players are correctly assigned to their positions
+        for (int i = 0; i < JoinedPlayers.Length; i++)
         {
-            // Instantiate the player prefab at the designated position
-            GameObject playerInstance = PhotonNetwork.Instantiate(playerPrefab.name, playerPositions[playerIndex].position, playerPositions[playerIndex].rotation);
-            gamePlayManager.players.Add(playerInstance.GetComponent<Player>());
-            // Set the instantiated player as a child of the corresponding position
-            playerInstance.transform.SetParent(playerPositions[playerIndex], false);
-            playerInstance.transform.localPosition = Vector3.zero;
-            playerInstance.transform.localRotation = Quaternion.Euler(Vector3.zero);
-            playerInstance.transform.localScale = Vector3.one;
+            GameObject player = JoinedPlayers[i];
+            if (player != null && player.transform.parent == null)
+            {
+                // Find an available position for this player
+                for (int j = 0; j < PlayerPositions.Length; j++)
+                {
+                    if (PlayerPositions[j].childCount == 0)
+                    {
+                        player.transform.SetParent(PlayerPositions[j]);
+                        player.transform.localPosition = Vector3.zero; // Reset local position
+                        player.transform.localRotation = Quaternion.identity; // Reset local rotation
+                        break; // Exit the loop once the position is assigned
+                    }
+                }
+            }
         }
     }
 }
-
-
-*/

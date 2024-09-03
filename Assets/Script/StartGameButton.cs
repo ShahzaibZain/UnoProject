@@ -23,6 +23,11 @@ public class StartGameButton : MonoBehaviourPunCallbacks
         startButton.onClick.AddListener(OnStartGameClicked);
     }
 
+    private void Update()
+    {
+        UpdateJoinedPlayersCount();
+    }
+
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
     {
         UpdateJoinedPlayersCount();
