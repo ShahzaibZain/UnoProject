@@ -1,4 +1,4 @@
-using Photon.Pun;
+/*using Photon.Pun;
 using UnityEngine;
 
 public class PlayerPositionManager : MonoBehaviourPunCallbacks
@@ -32,3 +32,4 @@ public class PlayerPositionManager : MonoBehaviourPunCallbacks
 }
 
 
+*/

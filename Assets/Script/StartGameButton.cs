@@ -9,9 +9,6 @@ public class StartGameButton : MonoBehaviourPunCallbacks
     public Text joinedPlayersCount;
     public static int joinedPlayers;
 
-    public Transform[] spawnPositions;  // Assign spawn positions in the inspector
-    public GameObject playerPrefab;  // Assign the PlayerPrefab in the inspector
-
     void Start()
     {
         // Update the joined players count when the script starts
@@ -25,12 +22,6 @@ public class StartGameButton : MonoBehaviourPunCallbacks
 
         startButton.onClick.AddListener(OnStartGameClicked);
     }
-
-    // This method is called when a new player joins the room
-    /*public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        UpdateJoinedPlayersCount();
-    }*/
 
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
     {
@@ -57,7 +48,6 @@ public class StartGameButton : MonoBehaviourPunCallbacks
     {
         // Only the host (MasterClient) will trigger the RPC for everyone
         photonView.RPC("LoadGameSceneForAll", RpcTarget.All);
-        //CreatePlayerMethod();
         //PhotonNetwork.CurrentRoom.IsVisible = false;
     }
 

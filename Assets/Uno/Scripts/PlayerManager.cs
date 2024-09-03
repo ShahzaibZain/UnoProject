@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviourPunCallbacks 
 {
-    public GameObject[] playerGameObjects; // Assign Player1 to Player4 in the editor
+    /*public GameObject[] playerGameObjects; // Assign Player1 to Player4 in the editor
     public GameObject[] playerCardsGameObjects; // Assign Player1BG to Player4BG in the editor
 
     void Start()
@@ -26,5 +26,5 @@ public class PlayerManager : MonoBehaviourPunCallbacks
 
         // You can also assign the player's name, avatar, etc., here.
         playerScript.SetAvatarProfile(GameManager.PlayerAvatarProfile);
-    }
+    }*/
 }

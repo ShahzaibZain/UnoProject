@@ -16,10 +16,6 @@ public class GamePlayManager : MonoBehaviour
     public AudioClip choose_color_clip;
 
     [Header("Gameplay")]
-    [Range(0, 100)]
-    public int UnoProbability = 70;
-    [Range(0, 100)]
-    public int LowercaseNameProbability = 30;
 
     public float cardDealTime = 0.05f;
     public Card _cardPrefab;
@@ -34,8 +30,6 @@ public class GamePlayManager : MonoBehaviour
 
     [Header("Player Setting")]
     public List<Player> players;
-    public TextAsset multiplayerNames;
-    public TextAsset computerProfiles;
     public bool clockwiseTurn = true;
     public int currentPlayerIndex = 0;
     public Player CurrentPlayer { get { return players[currentPlayerIndex]; } }
@@ -45,7 +39,6 @@ public class GamePlayManager : MonoBehaviour
     public ParticleSystem starParticle;
     public List<GameObject> playerObject;
     public GameObject loseTimerAnimation;
-
     private List<Card> cards;
     private List<Card> wasteCards;
 
@@ -74,10 +67,7 @@ public class GamePlayManager : MonoBehaviour
     int fastForwardTime = 0;
     bool setup = false, multiplayerLoaded = false, gameOver = false;
 
-    //public Transform[] spawnPositions;  // Assign spawn positions in the inspector
     public GameObject playerPrefab;  // Assign the PlayerPrefab in the inspector
-
-    public PlayerPositionManager playerPositionManager;
 
     private void Start()
     {
@@ -85,66 +75,8 @@ public class GamePlayManager : MonoBehaviour
         Input.multiTouchEnabled = false;
         Time.timeScale = 1;
         OnApplicationPause(false);
-
-        // Sync all players in the game scene
-        //playerPositionManager.StartMethod();
         StartCoroutine(StartMultiPlayerGameMode());
     }
-
-    void CreatePlayerMethod()
-    {
-        /*if (PhotonNetwork.IsConnectedAndReady)
-        {
-            int playerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
-            playerIndex = Mathf.Clamp(playerIndex, 0, spawnPositions.Length - 1);
-
-            Transform spawnPosition = spawnPositions[playerIndex];  // Choose a spawn position based on player index
-
-            // Instantiate the player at the designated spawn position
-            GameObject playerInstance = PhotonNetwork.Instantiate(playerPrefab.name, spawnPosition.position, spawnPosition.rotation);
-
-            // Set the instantiated player as a child of the GameObject that this script is attached to
-            playerInstance.transform.SetParent(this.transform, false);
-            playerInstance.transform.localScale = Vector3.one;
-
-            // Set ownership for the local player
-            playerInstance.GetComponent<Player>().GetComponentInParent<PhotonView>().RequestOwnership();
-        }*/
-    }
-
-/*    void SetPlayersInGameplay()
-    {
-        Player[] playersInScene = FindObjectsOfType<Player>();
-
-        foreach (var player in playersInScene)
-        {
-            players.Add(player);
-
-            // Ensure each player only controls their own character
-            if (player.GetComponentInParent<PhotonView>().IsMine)
-            {
-                player.isUserPlayer = true;  // Local player controls this instance
-            }
-            else
-            {
-                player.isUserPlayer = false;  // Other players' instances
-            }
-        }
-    }*/
-
-
-
-    IEnumerator StartMultiPlayerGameMode(int i)
-    {
-        loadingView.SetActive(true);
-        yield return new WaitForSeconds(Random.Range(3f, 10f));
-        loadingView.SetActive(false);
-        SetTotalPlayer(i);
-        SetupGame();
-
-        multiplayerLoaded = true;
-    }
-
 
     IEnumerator StartMultiPlayerGameMode()
     {
@@ -157,72 +89,11 @@ public class GamePlayManager : MonoBehaviour
         multiplayerLoaded = true;
     }
 
-    void SetTotalPlayer(int totalPlayer = 4)
-    {
-        cardDeckBtn.SetActive(true);
-        cardWastePile.gameObject.SetActive(true);
-        unoBtn.SetActive(true);
-        if (totalPlayer == 2)
-        {
-            players[0].gameObject.SetActive(true);
-            players[0].CardPanelBG.SetActive(true);
-            players[2].gameObject.SetActive(true);
-            players[2].CardPanelBG.SetActive(true);
-            players.RemoveAt(3);
-            players.RemoveAt(1);
-
-        }
-        else if (totalPlayer == 3)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                players[i].gameObject.SetActive(true);
-                players[i].CardPanelBG.SetActive(true);
-            }
-            players[3].CardPanelBG.SetActive(true);
-            players.RemoveAt(3);
-
-        }
-        else
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                players[i].gameObject.SetActive(true);
-                players[i].CardPanelBG.SetActive(true);
-            }
-        }
-    }
-
-
     void SetupGame()
     {
         menuButton.SetActive(true);
         currentPlayerIndex = Random.Range(0, players.Count);
         players[0].SetAvatarProfile(GameManager.PlayerAvatarProfile);
-
-        if (GameManager.currentGameMode == GameMode.MultiPlayer)
-        {
-            string[] nameList = multiplayerNames.text.Split('\n');
-            List<int> indexes = new List<int>();
-
-            for (int i = 1; i < players.Count; i++)
-            {
-                while (true)
-                {
-                    int index = Random.Range(0, nameList.Length);
-                    var name = nameList[index].Trim();
-                    if (name.Length == 0) continue;
-
-                    if (!indexes.Contains(index))
-                    {
-                        indexes.Add(index);
-                        if (Random.value < LowercaseNameProbability / 100f) name = name.ToLower();
-                        players[i].SetAvatarProfile(new AvatarProfile { avatarIndex = index % GameManager.TOTAL_AVATAR, avatarName = name });
-                        break;
-                    }
-                }
-            }
-        }
 
         CreateDeck();
         cards.Shuffle();
@@ -396,48 +267,6 @@ public class GamePlayManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    private IEnumerator RemovePlayerFromRoom(float time)
-    {
-        yield return new WaitForSeconds(time);
-
-        if (gameOver) yield break;
-
-        List<int> indexes = new List<int>();
-        for (int i = 1; i < players.Count; i++)
-        {
-            indexes.Add(i);
-        }
-        indexes.Shuffle();
-
-        int index = -1;
-        foreach (var i in indexes)
-        {
-            if (!players[i].Timer)
-            {
-                index = i;
-                break;
-            }
-        }
-
-        var player = players[index];
-        player.isInRoom = false;
-
-        Toast.instance.ShowMessage(player.playerName + " left the room", 2.5f);
-
-        yield return new WaitForSeconds(2f);
-
-        player.gameObject.SetActive(false);
-        foreach (var item in player.cardsPanel.cards)
-        {
-            item.gameObject.SetActive(false);
-        }
-    }
-
-    void ChooseColorforAI()
-    {
-        CurrentPlayer.ChooseBestColor();
     }
 
     public void NextPlayerIndex()
@@ -618,38 +447,6 @@ public class GamePlayManager : MonoBehaviour
         currentPlayerIndex = Random.Range(0, players.Count);
         setup = true;
         CurrentPlayer.OnTurn();
-    }
-
-
-    IEnumerator CheckNetwork()
-    {
-        while (true)
-        {
-            WWW www = new WWW("https://www.google.com");
-            yield return www;
-            if (string.IsNullOrEmpty(www.error))
-            {
-                if (noNetwork.isOpen)
-                {
-                    noNetwork.HidePopup();
-
-                    Time.timeScale = 1;
-                    OnApplicationPause(false);
-                }
-            }
-            else
-            {
-                if (Time.timeScale == 1)
-                {
-                    noNetwork.ShowPopup();
-
-                    Time.timeScale = 0;
-                    pauseTime = System.DateTime.Now;
-                }
-            }
-
-            yield return new WaitForSecondsRealtime(1f);
-        }
     }
 
     void OnApplicationPause(bool pauseStatus)
