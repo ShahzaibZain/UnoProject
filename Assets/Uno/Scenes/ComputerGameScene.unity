@@ -5400,6 +5400,9 @@ MonoBehaviour:
   unoClicked: 0
   choosingColor: 0
   isInRoom: 1
+  photonView: {fileID: 0}
+  GamePlayManager: {fileID: 0}
+  parentGO: {fileID: 0}
 --- !u!114 &127133823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8556,6 +8559,9 @@ MonoBehaviour:
   unoClicked: 0
   choosingColor: 0
   isInRoom: 1
+  photonView: {fileID: 0}
+  GamePlayManager: {fileID: 0}
+  parentGO: {fileID: 0}
 --- !u!114 &517660854
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11057,6 +11063,9 @@ MonoBehaviour:
   unoClicked: 0
   choosingColor: 0
   isInRoom: 1
+  photonView: {fileID: 0}
+  GamePlayManager: {fileID: 0}
+  parentGO: {fileID: 0}
 --- !u!114 &858389342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25889,6 +25898,9 @@ MonoBehaviour:
   unoClicked: 0
   choosingColor: 0
   isInRoom: 1
+  photonView: {fileID: 0}
+  GamePlayManager: {fileID: 0}
+  parentGO: {fileID: 0}
 --- !u!114 &1751472362
 MonoBehaviour:
   m_ObjectHideFlags: 0

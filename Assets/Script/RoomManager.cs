@@ -19,14 +19,18 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI playerCountText;
 
     private Dictionary<string, GameObject> roomButtons = new Dictionary<string, GameObject>();
-
+    ExitGames.Client.Photon.Hashtable playerproperties = new ExitGames.Client.Photon.Hashtable();
 
     private void Start()
     {
-        PhotonNetwork.Disconnect();
         SetUIInteractable(false);
-        statusText.text = "Connecting to Photon...";
-        PhotonNetwork.ConnectUsingSettings();
+        // Don't disconnect unless necessary
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.NickName = PlayerPrefs.GetString("PlayerName");
+            statusText.text = "Connecting to Photon...";
+            PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
     public void GoToHome()
@@ -36,6 +40,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         statusText.text = "Connected to Master Server. You can now create or join a room.";
+        playerproperties["Name"] = PlayerPrefs.GetString("PlayerName");
+        playerproperties["Avatar"] = PlayerPrefs.GetInt("PlayerAvatarIndex");
+        PhotonNetwork.SetPlayerCustomProperties(playerproperties);
         SetUIInteractable(true);
         PhotonNetwork.JoinLobby();
     }
@@ -59,7 +66,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         RoomOptions roomOptions = new RoomOptions
         {
-            MaxPlayers = 4 // Set maximum players in the room
+            MaxPlayers = 4, // Set maximum players in the room
+            BroadcastPropsChangeToAll = true,
         };
 
         PhotonNetwork.CreateRoom(roomName, roomOptions);
@@ -150,5 +158,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         createButton.interactable = interactable;
         createInputField.interactable = interactable;
+        joinInputField.interactable = interactable;
     }
 }

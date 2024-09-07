@@ -84,11 +84,11 @@ public class GamePlayManager : MonoBehaviour
         StartCoroutine(StartMultiPlayerGameMode());
     }
 
-    [PunRPC]
+/*    [PunRPC]
     void MultiplayerGameModeMethod()
     {
         StartCoroutine(StartMultiPlayerGameMode());
-    }
+    }*/
 
     IEnumerator StartMultiPlayerGameMode()
     {
@@ -212,6 +212,75 @@ public class GamePlayManager : MonoBehaviour
 
     }
 
+    /*    public void PutCardToWastePile(Card c, Player p = null)
+        {
+            if (p != null)
+            {
+                p.RemoveCard(c);
+                if (p.cardsPanel.cards.Count == 1 && !p.unoClicked)
+                {
+                    ApplyUnoCharge(CurrentPlayer);
+                }
+                GameManager.PlaySound(draw_card_clip);
+            }
+
+            CurrentType = c.Type;
+            CurrentValue = c.Value;
+            wasteCards.Add(c);
+            c.IsOpen = true;
+            c.transform.SetParent(cardWastePile.transform, true);
+            c.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1), c.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
+
+            if (p != null)
+            {
+                if (p.cardsPanel.cards.Count == 0)
+                {
+                    Invoke("SetupGameOver", 2f);
+                    return;
+                }
+                if (c.Type == CardType.Other)
+                {
+                    CurrentPlayer.Timer = true;
+                    CurrentPlayer.choosingColor = true;
+                    if (CurrentPlayer.isUserPlayer)
+                    {
+                        colorChoose.ShowPopup();
+                    }
+                    else
+                    {
+                        //Invoke("ChooseColorforAI", Random.Range(3f, 9f));
+                    }
+                }
+                else
+                {
+                    if (c.Value == CardValue.Reverse)
+                    {
+                        clockwiseTurn = !clockwiseTurn;
+                        cardEffectAnimator.Play(clockwiseTurn ? "ClockWiseAnim" : "AntiClockWiseAnim");
+                        Invoke("NextPlayerTurn", 1.5f);
+                    }
+                    else if (c.Value == CardValue.Skip)
+                    {
+                        NextPlayerIndex();
+                        CurrentPlayer.ShowMessage("Turn Skipped!");
+                        Invoke("NextPlayerTurn", 1.5f);
+                    }
+                    else if (c.Value == CardValue.DrawTwo)
+                    {
+                        NextPlayerIndex();
+                        CurrentPlayer.ShowMessage("+2");
+                        wildCardParticle.Emit(30);
+                        StartCoroutine(DealCardsToPlayer(CurrentPlayer, 2, .5f));
+                        Invoke("NextPlayerTurn", 1.5f);
+                    }
+                    else
+                    {
+                        NextPlayerTurn();
+                    }
+                }
+            }
+        }*/
+    [PunRPC]
     public void PutCardToWastePile(Card c, Player p = null)
     {
         if (p != null)
@@ -226,7 +295,8 @@ public class GamePlayManager : MonoBehaviour
 
         CurrentType = c.Type;
         CurrentValue = c.Value;
-        wasteCards.Add(c);
+
+        wasteCards.Add(c); // Add to the wasteCards list
         c.IsOpen = true;
         c.transform.SetParent(cardWastePile.transform, true);
         c.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1), c.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
@@ -238,6 +308,7 @@ public class GamePlayManager : MonoBehaviour
                 Invoke("SetupGameOver", 2f);
                 return;
             }
+
             if (c.Type == CardType.Other)
             {
                 CurrentPlayer.Timer = true;
@@ -251,33 +322,100 @@ public class GamePlayManager : MonoBehaviour
                     //Invoke("ChooseColorforAI", Random.Range(3f, 9f));
                 }
             }
+            if (c.Value == CardValue.Reverse)
+            {
+                clockwiseTurn = !clockwiseTurn;
+                cardEffectAnimator.Play(clockwiseTurn ? "ClockWiseAnim" : "AntiClockWiseAnim");
+                Invoke("NextPlayerTurn", 1.5f);
+            }
+            else if (c.Value == CardValue.Skip)
+            {
+                NextPlayerIndex();
+                CurrentPlayer.ShowMessage("Turn Skipped!");
+                Invoke("NextPlayerTurn", 1.5f);
+            }
+            else if (c.Value == CardValue.DrawTwo)
+            {
+                NextPlayerIndex();
+                CurrentPlayer.ShowMessage("+2");
+                wildCardParticle.Emit(30);
+                StartCoroutine(DealCardsToPlayer(CurrentPlayer, 2, .5f));
+                Invoke("NextPlayerTurn", 1.5f);
+            }
             else
             {
-                if (c.Value == CardValue.Reverse)
-                {
-                    clockwiseTurn = !clockwiseTurn;
-                    cardEffectAnimator.Play(clockwiseTurn ? "ClockWiseAnim" : "AntiClockWiseAnim");
-                    Invoke("NextPlayerTurn", 1.5f);
-                }
-                else if (c.Value == CardValue.Skip)
-                {
-                    NextPlayerIndex();
-                    CurrentPlayer.ShowMessage("Turn Skipped!");
-                    Invoke("NextPlayerTurn", 1.5f);
-                }
-                else if (c.Value == CardValue.DrawTwo)
-                {
-                    NextPlayerIndex();
-                    CurrentPlayer.ShowMessage("+2");
-                    wildCardParticle.Emit(30);
-                    StartCoroutine(DealCardsToPlayer(CurrentPlayer, 2, .5f));
-                    Invoke("NextPlayerTurn", 1.5f);
-                }
-                else
-                {
-                    NextPlayerTurn();
-                }
+                NextPlayerTurn();
             }
+        }
+    }
+
+    /*    [PunRPC]
+        void SyncWastePile(CardType cardType, CardValue cardValue)
+        {
+             // Retrieve card using ID
+            CurrentType = cardType;
+            CurrentValue = cardValue;
+
+            //wasteCards.Add(card);
+            //card.IsOpen = true;
+            //card.transform.SetParent(cardWastePile.transform, true);
+            //card.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1), card.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
+        }*/
+
+    /*public void RPC_BroadcastCardToWastePile()
+    {
+        photonView.RPC("BroadcastCardToWastePile", RpcTarget.AllBuffered);
+    }
+    [PunRPC]
+    public void BroadcastCardToWastePile(Card c, Player p)
+    {
+        PutCardToWastePile(c,p);
+    }*/
+    public void RPC_BroadcastCardToWastePile(Card c, Player p)
+    {
+        // Broadcast cardID and player's ActorNumber to all clients
+        photonView.RPC("BroadcastCardToWastePile", RpcTarget.AllBuffered, c.cardID, p.photonView.Owner.ActorNumber);
+    }
+
+    [PunRPC]
+    public void BroadcastCardToWastePile(int cardID, int playerActorNumber)
+    {
+        Player player = null;
+
+        // Retrieve the player by ActorNumber
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (playerActorNumber == players[i].photonView.ControllerActorNr)
+            {
+                player = players[i];
+                break; // Found the player, exit loop
+            }
+        }
+
+        if (player == null)
+        {
+            Debug.LogWarning("Player not found with ActorNumber: " + playerActorNumber);
+            return;
+        }
+
+        // Find the card using the CardManager
+        if (CardManager.instance != null)
+        {
+            Card card = CardManager.instance.GetCardById(cardID);
+
+            // Call the method to add the card to the waste pile
+            if (card != null)
+            {
+                PutCardToWastePile(card, player);
+            }
+            else
+            {
+                Debug.LogWarning("Card not found with ID: " + cardID);
+            }
+        }
+        else
+        {
+            Debug.LogError("CardManager instance is null.");
         }
     }
 
@@ -295,38 +433,10 @@ public class GamePlayManager : MonoBehaviour
         return (x % m + m) % m;
     }
 
-/*    public void NextPlayerTurn()
+    public void NextPlayerTurn()
     {
         NextPlayerIndex();
         CurrentPlayer.OnTurn();
-    }*/
-
-    public void NextPlayerTurn()
-    {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
-        photonView.RPC("SetPlayerTurn", RpcTarget.All, currentPlayerIndex);
-    }
-
-    [PunRPC]
-    void SetPlayerTurn(int playerIndex)
-    {
-        currentPlayerIndex = playerIndex;
-        players[currentPlayerIndex].OnTurn();
-    }
-
-    public void OnCardPlayed(Card card, Player player)
-    {
-        photonView.RPC("RPC_OnCardPlayed", RpcTarget.All, card.GetComponent<PhotonView>().ViewID, player.photonView.ViewID);
-    }
-
-    [PunRPC]
-    void RPC_OnCardPlayed(int cardViewID, int playerViewID)
-    {
-        Card playedCard = PhotonView.Find(cardViewID).GetComponent<Card>();
-        Player player = PhotonView.Find(playerViewID).GetComponent<Player>();
-
-        PutCardToWastePile(playedCard, player);
-        player.OnTurnEnd();
     }
 
     public void OnColorSelect(int i)

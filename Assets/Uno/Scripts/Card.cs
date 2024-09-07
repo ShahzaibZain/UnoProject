@@ -56,6 +56,11 @@ public class Card : MonoBehaviour, IPointerClickHandler
 
     public Action<Card> onClick;
 
+    private void Start()
+    {
+        CardManager.instance.RegisterCard(this);
+    }
+
     public void SetTargetPosAndRot(Vector3 pos, float rotZ)
     {
         if (LeanTween.isTweening(gameObject))

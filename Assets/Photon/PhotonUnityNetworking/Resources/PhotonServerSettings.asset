@@ -61,6 +61,10 @@ MonoBehaviour:
   - InstantiatePlayerAtPosition
   - SetPlayerTurn
   - RPC_OnCardPlayed
+  - AddThisPlayerToList
+  - PutCardToWastePile
+  - SyncWastePile
+  - BroadcastCardToWastePile
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -63,7 +63,6 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("isFirstOpen", value ? 1 : 0);
         }
     }
-
     public static string PlayerAvatarName
     {
         get

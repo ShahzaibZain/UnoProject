@@ -45,7 +45,7 @@ public class StartGameButton : MonoBehaviourPunCallbacks
         if (joinedPlayersCount != null)
         {
             joinedPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-            joinedPlayersCount.text = joinedPlayers.ToString();
+            joinedPlayersCount.text = joinedPlayers + "player(s) joined";
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,9 @@ public class Player : MonoBehaviour
     public bool isInRoom = true;
     public PhotonView photonView;
     public GamePlayManager GamePlayManager;
+    public GameObject parentGO;
+    private Vector3 parentGOposition;
+    private Vector3 parentGOrotation;
 
     private void Awake()
     {
@@ -33,17 +37,90 @@ public class Player : MonoBehaviour
         photonView = GetComponent<PhotonView>();
 
     }
-    void Start()
+
+    #region PlayerConstructor
+    public int ActorNumber { get; set; }
+    public string Nickname { get; set; }
+
+    // Constructor to initialize from Photon.Realtime.Player
+    public Player(Photon.Realtime.Player photonPlayer)
     {
-        SetAvatarProfile(GameManager.PlayerAvatarProfile);
-        isUserPlayer = false;
-        if (photonView.IsMine)
+        this.ActorNumber = photonPlayer.ActorNumber;
+        this.Nickname = photonPlayer.NickName;
+    }
+    #endregion
+
+    private void Start()
+    {
+        // Set parent and position the player correctly
+        if (parentGO != null)
         {
-            isUserPlayer = true;  // Local player controls this instance
+            parentGO.transform.SetParent(GamePlayManager.transform, false);
+            if (parentGO.name == "Player1(Clone)")
+            {
+                parentGOposition = new Vector3(0, -504, 0);
+                parentGOrotation = new Vector3(0, 0, 0);
+            }
+            else if (parentGO.name == "Player2(Clone)")
+            {
+                parentGOposition = new Vector3(-72.552f, 360, 0);
+                parentGOrotation = new Vector3(0, 0, -90);
+            }
+            else if (parentGO.name == "Player3(Clone)")
+            {
+                //parentGOposition = new Vector3(-1028.552, 504, 0);
+                //parentGOrotation = new Vector3(0, 0, -90);
+            }
+            else if (parentGO.name == "Player4(Clone)")
+            {
+                //parentGOposition = new Vector3(-1028.552, 504, 0);
+                //parentGOrotation = new Vector3(0, 0, -90);
+            }
+            parentGO.transform.localPosition = parentGOposition;
+            parentGO.transform.localScale = Vector3.one;
         }
-        Timer = false;
+
+        // Set up the player's avatar and name from custom properties
+        if (!photonView.IsMine)
+        {
+            isUserPlayer = false;
+            if (photonView.Controller != null && photonView.Controller.CustomProperties.ContainsKey("Name"))
+            {
+                avatarName.text = photonView.Controller.CustomProperties["Name"].ToString();
+            }
+            else
+            {
+                Debug.LogWarning("Custom property 'Name' not found or photonView.Controller is null.");
+            }
+
+            if (photonView.Controller != null && photonView.Controller.CustomProperties.ContainsKey("Avatar"))
+            {
+                int avatarIndex = (int)photonView.Controller.CustomProperties["Avatar"];
+                avatarImage.sprite = Resources.Load<Sprite>("Avatar/" + avatarIndex);
+            }
+            else
+            {
+                Debug.LogWarning("Custom property 'Avatar' not found or photonView.Controller is null.");
+            }
+
+        }
+        else
+        {
+            // This player is the local player, apply the local settings
+            isUserPlayer = true;
+            SetAvatarProfile(GameManager.PlayerAvatarProfile);
+        }
+
         // Initialize card visibility based on whether this is the user player
         UpdateCardVisibility();
+        AddThisPlayerToList();
+        // Add player to GamePlayManager's list
+        //photonView.RPC("AddThisPlayerToList", RpcTarget.AllBuffered);
+    }
+
+    //[PunRPC]
+    private void AddThisPlayerToList()
+    {
         GamePlayManager.players.Add(this);
     }
 
@@ -175,15 +252,26 @@ public class Player : MonoBehaviour
         c.IsClickable = false;
     }
 
+    /*    public void OnCardClick(Card c)
+        {
+            if (Timer)
+            {
+                GamePlayManager.instance.PutCardToWastePile(c, this);
+                OnTurnEnd();
+            }
+        }*/
+
     public void OnCardClick(Card c)
     {
         if (Timer)
         {
-            GamePlayManager.instance.PutCardToWastePile(c, this);
-            //photonView.RPC("OnTurnEnd", RpcTarget.AllBuffered);
+            // Broadcast the card to all players before adding to the waste pile
+            GamePlayManager.BroadcastCardToWastePile(c.cardID, this.photonView.ControllerActorNr);
+            //GamePlayManager.instance.PutCardToWastePile(c, this);
             OnTurnEnd();
         }
     }
+
 
     public void OnTurnEnd()
     {
