@@ -68,12 +68,12 @@ public class Player : MonoBehaviour
             }
             else if (parentGO.name == "Player3(Clone)")
             {
-                //parentGOposition = new Vector3(-1028.552, 504, 0);
+                //parentGOposition = new Vector3(-1028.552f, 504, 0);
                 //parentGOrotation = new Vector3(0, 0, -90);
             }
             else if (parentGO.name == "Player4(Clone)")
             {
-                //parentGOposition = new Vector3(-1028.552, 504, 0);
+                //parentGOposition = new Vector3(-1028.552f, 504, 0);
                 //parentGOrotation = new Vector3(0, 0, -90);
             }
             parentGO.transform.localPosition = parentGOposition;
@@ -160,7 +160,7 @@ public class Player : MonoBehaviour
 
     void UpdateTimer()
     {
-        timerImage.fillAmount -= 0.1f / totalTimer;
+        //timerImage.fillAmount -= 0.1f / totalTimer;
         if (timerImage.fillAmount <= 0)
         {
             if (choosingColor)
@@ -265,9 +265,9 @@ public class Player : MonoBehaviour
     {
         if (Timer)
         {
-            // Broadcast the card to all players before adding to the waste pile
-            GamePlayManager.BroadcastCardToWastePile(c.cardID, this.photonView.ControllerActorNr);
-            //GamePlayManager.instance.PutCardToWastePile(c, this);
+            // Broadcast the card to all players before adding to the waste
+            GamePlayManager.instance.RPC_SyncWastePile(c);
+            GamePlayManager.instance.PutCardToWastePile(c, this);
             OnTurnEnd();
         }
     }

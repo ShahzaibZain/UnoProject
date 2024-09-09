@@ -69,6 +69,7 @@ public class GamePlayManager : MonoBehaviour
 
     public GameObject playerPrefab;  // Assign the PlayerPrefab in the inspector
     public PhotonView photonView;
+    public GameObject cardPrefab;
 
     private void Awake()
     {
@@ -82,6 +83,7 @@ public class GamePlayManager : MonoBehaviour
         OnApplicationPause(false);
         //photonView.RPC("MultiplayerGameModeMethod", RpcTarget.MasterClient);
         StartCoroutine(StartMultiPlayerGameMode());
+
     }
 
 /*    [PunRPC]
@@ -104,7 +106,7 @@ public class GamePlayManager : MonoBehaviour
     void SetupGame()
     {
         menuButton.SetActive(true);
-        currentPlayerIndex = Random.Range(0, players.Count);
+        currentPlayerIndex = 0;
         //players[0].SetAvatarProfile(GameManager.PlayerAvatarProfile);
 
         CreateDeck();
@@ -162,7 +164,7 @@ public class GamePlayManager : MonoBehaviour
             a++;
         }
 
-        PutCardToWastePile(cards[a]);
+        PutFirstCardToWastePile(cards[a]);
         cards.RemoveAt(a);
 
         for (int i = 0; i < players.Count; i++)
@@ -280,9 +282,18 @@ public class GamePlayManager : MonoBehaviour
                 }
             }
         }*/
-    [PunRPC]
+    public void PutFirstCardToWastePile(Card c)
+    {
+        RPC_SyncWastePile(c);
+        wasteCards.Add(c); // Add to the wasteCards list
+    }
     public void PutCardToWastePile(Card c, Player p = null)
     {
+        if (p == null)
+        {
+            Debug.Log("Player is null");
+
+        }
         if (p != null)
         {
             p.RemoveCard(c);
@@ -292,7 +303,7 @@ public class GamePlayManager : MonoBehaviour
             }
             GameManager.PlaySound(draw_card_clip);
         }
-
+/*
         CurrentType = c.Type;
         CurrentValue = c.Value;
 
@@ -300,7 +311,7 @@ public class GamePlayManager : MonoBehaviour
         c.IsOpen = true;
         c.transform.SetParent(cardWastePile.transform, true);
         c.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1), c.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
-
+*/
         if (p != null)
         {
             if (p.cardsPanel.cards.Count == 0)
@@ -349,75 +360,56 @@ public class GamePlayManager : MonoBehaviour
         }
     }
 
-    /*    [PunRPC]
-        void SyncWastePile(CardType cardType, CardValue cardValue)
-        {
-             // Retrieve card using ID
-            CurrentType = cardType;
-            CurrentValue = cardValue;
-
-            //wasteCards.Add(card);
-            //card.IsOpen = true;
-            //card.transform.SetParent(cardWastePile.transform, true);
-            //card.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1), card.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
-        }*/
-
-    /*public void RPC_BroadcastCardToWastePile()
+    public Card CreateCard(CardType type, CardValue value)
     {
-        photonView.RPC("BroadcastCardToWastePile", RpcTarget.AllBuffered);
+        // Create a new card or find an existing one based on type and value
+        // You could instantiate a new card prefab or search in the player's hand for this card
+
+        GameObject cardObject = Instantiate(cardPrefab);  // Create a new GameObject
+        cardObject.transform.SetParent(players[currentPlayerIndex].transform, false);
+        Card card = cardObject.GetComponent<Card>();
+        card.Type = type;
+        card.Value = value;
+
+        return card;
     }
-    [PunRPC]
-    public void BroadcastCardToWastePile(Card c, Player p)
+
+/*    public Card GetCardById(int cardID)
     {
-        PutCardToWastePile(c,p);
+        // Loop through the list and find the card with the matching cardID
+        if (CardManager.instance.allCards.ContainsKey(cardID))
+        {
+            return CardManager.instance.allCards[cardID];
+        }
+        return null;  // Return null if no card with the given ID is found
     }*/
-    public void RPC_BroadcastCardToWastePile(Card c, Player p)
-    {
-        // Broadcast cardID and player's ActorNumber to all clients
-        photonView.RPC("BroadcastCardToWastePile", RpcTarget.AllBuffered, c.cardID, p.photonView.Owner.ActorNumber);
-    }
 
     [PunRPC]
-    public void BroadcastCardToWastePile(int cardID, int playerActorNumber)
+    void SyncWastePile(CardType cardType, CardValue cardValue)
     {
-        Player player = null;
-
-        // Retrieve the player by ActorNumber
-        for (int i = 0; i < players.Count; i++)
+        CurrentType = cardType;
+        CurrentValue = cardValue;
+        // Retrieve the card using the cardID
+        Card card = CreateCard(cardType, cardValue);
+        Debug.Log("Card is " + cardType + " " + cardValue);
+        if (card != null)
         {
-            if (playerActorNumber == players[i].photonView.ControllerActorNr)
-            {
-                player = players[i];
-                break; // Found the player, exit loop
-            }
-        }
 
-        if (player == null)
-        {
-            Debug.LogWarning("Player not found with ActorNumber: " + playerActorNumber);
-            return;
-        }
-
-        // Find the card using the CardManager
-        if (CardManager.instance != null)
-        {
-            Card card = CardManager.instance.GetCardById(cardID);
-
-            // Call the method to add the card to the waste pile
-            if (card != null)
-            {
-                PutCardToWastePile(card, player);
-            }
-            else
-            {
-                Debug.LogWarning("Card not found with ID: " + cardID);
-            }
-        }
-        else
-        {
-            Debug.LogError("CardManager instance is null.");
+            // Sync the waste pile visually
+            wasteCards.Add(card);
+            card.IsOpen = true;
+            card.transform.SetParent(cardWastePile.transform, true);
+            card.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1),
+                card.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
         }
     }
+
+    public void RPC_SyncWastePile(Card card)
+    {
+        photonView.RPC("SyncWastePile", RpcTarget.All, card.Type, card.Value);
+    }
+
+
 
     public void NextPlayerIndex()
     {

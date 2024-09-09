@@ -5,7 +5,7 @@ public class CardManager : MonoBehaviour
 {
     public static CardManager instance;
 
-    private Dictionary<int, Card> allCards = new Dictionary<int, Card>();
+    public Dictionary<int, Card> allCards = new Dictionary<int, Card>();
 
     private void Awake()
     {

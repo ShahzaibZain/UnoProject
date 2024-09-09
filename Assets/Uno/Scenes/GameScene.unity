@@ -605,6 +605,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 4282314486222402872, guid: fee619b909d4a58409d23fc766a58f85,
     type: 3}
   photonView: {fileID: 144639355}
+  cardPrefab: {fileID: 1920526472049606, guid: e86385f28a6913d49b74080aa0d88b86, type: 3}
 --- !u!114 &144639355
 MonoBehaviour:
   m_ObjectHideFlags: 0
