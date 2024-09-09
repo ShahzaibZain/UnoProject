@@ -56,28 +56,95 @@ public class Player : MonoBehaviour
         if (parentGO != null)
         {
             parentGO.transform.SetParent(GamePlayManager.transform, false);
+            RectTransform rectTransform = parentGO.GetComponent<RectTransform>();
+
             if (parentGO.name == "Player1(Clone)")
             {
-                parentGOposition = new Vector3(0, -504, 0);
-                parentGOrotation = new Vector3(0, 0, 0);
+                /*parentGOposition = new Vector3(0, -504, 0);
+                parentGOrotation = new Vector3(0, 0, 0);*/
+                rectTransform.anchorMin = new Vector2(0.5f, 0);
+                rectTransform.anchorMax = new Vector2(0.5f, 0);
+
+                // Set pivot to center
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+                // Set anchored position (Pos X = 0, Pos Y = 110)
+                rectTransform.anchoredPosition = new Vector2(0, 110);
+
+                // Set size (Width = 464.884, Height = 110)
+                rectTransform.sizeDelta = new Vector2(464.884f, 110);
+
             }
             else if (parentGO.name == "Player2(Clone)")
             {
-                parentGOposition = new Vector3(-72.552f, 360, 0);
-                parentGOrotation = new Vector3(0, 0, -90);
+                /*parentGOposition = new Vector3(-950, 0, 0);
+                parentGOrotation = new Vector3(0, 0, -90);*/
+                // Setting anchors to left middle
+                rectTransform.anchorMin = new Vector2(0, 0.5f);
+                rectTransform.anchorMax = new Vector2(0, 0.5f);
+
+                // Set pivot to center vertically (middle) and horizontally
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+                // Set anchored position (Pos X = 180, Pos Y = 0)
+                rectTransform.anchoredPosition = new Vector2(180, 0);
+
+                // Set size (Width = 360, Height = 85)
+                rectTransform.sizeDelta = new Vector2(360, 85);
+
+                // Set rotation (Z = -90)
+                rectTransform.localRotation = Quaternion.Euler(0, 0, -90);
+
+                // Set scale (X = 1, Y = 1, Z = 1)
+                rectTransform.localScale = new Vector3(1, 1, 1);
             }
             else if (parentGO.name == "Player3(Clone)")
             {
-                //parentGOposition = new Vector3(-1028.552f, 504, 0);
-                //parentGOrotation = new Vector3(0, 0, -90);
+                /*parentGOposition = new Vector3(0, 0, 0);
+                parentGOrotation = new Vector3(0, 0, -90);*/
+                rectTransform.anchorMin = new Vector2(0.5f, 1);
+                rectTransform.anchorMax = new Vector2(0.5f, 1);
+
+                // Set pivot to center vertically (middle) and horizontally
+                rectTransform.pivot = new Vector2(0.5f, 0);
+
+                // Set anchored position (Pos X = 180, Pos Y = 0)
+                rectTransform.anchoredPosition = new Vector2(0, -50);
+
+                // Set size (Width = 360, Height = 85)
+                rectTransform.sizeDelta = new Vector2(440, 85);
+
+                // Set rotation (Z = -90)
+                rectTransform.localRotation = Quaternion.Euler(0, 0, 180);
+
+                // Set scale (X = 1, Y = 1, Z = 1)
+                rectTransform.localScale = new Vector3(1, 1, 1);
             }
             else if (parentGO.name == "Player4(Clone)")
             {
-                //parentGOposition = new Vector3(-1028.552f, 504, 0);
-                //parentGOrotation = new Vector3(0, 0, -90);
+                /*parentGOposition = new Vector3(0, 0, 0);
+                parentGOrotation = new Vector3(0, 0, -90);*/
+                rectTransform.anchorMin = new Vector2(1, 0.5f);
+                rectTransform.anchorMax = new Vector2(1, 0.5f);
+
+                // Set pivot to center vertically (middle) and horizontally
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+                // Set anchored position (Pos X = 180, Pos Y = 0)
+                rectTransform.anchoredPosition = new Vector2(-180, 0);
+
+                // Set size (Width = 360, Height = 85)
+                rectTransform.sizeDelta = new Vector2(360, 85);
+
+                // Set rotation (Z = -90)
+                rectTransform.localRotation = Quaternion.Euler(0, 0, 90);
+
+                // Set scale (X = 1, Y = 1, Z = 1)
+                rectTransform.localScale = new Vector3(1, 1, 1);
             }
-            parentGO.transform.localPosition = parentGOposition;
-            parentGO.transform.localScale = Vector3.one;
+            /*parentGO.transform.localPosition = parentGOposition;
+            parentGO.transform.localRotation = Quaternion.Euler(parentGOrotation);
+            parentGO.transform.localScale = Vector3.one;*/
         }
 
         // Set up the player's avatar and name from custom properties
