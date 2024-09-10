@@ -60,8 +60,6 @@ public class Player : MonoBehaviour
 
             if (parentGO.name == "Player1(Clone)")
             {
-                /*parentGOposition = new Vector3(0, -504, 0);
-                parentGOrotation = new Vector3(0, 0, 0);*/
                 rectTransform.anchorMin = new Vector2(0.5f, 0);
                 rectTransform.anchorMax = new Vector2(0.5f, 0);
 
@@ -77,8 +75,6 @@ public class Player : MonoBehaviour
             }
             else if (parentGO.name == "Player2(Clone)")
             {
-                /*parentGOposition = new Vector3(-950, 0, 0);
-                parentGOrotation = new Vector3(0, 0, -90);*/
                 // Setting anchors to left middle
                 rectTransform.anchorMin = new Vector2(0, 0.5f);
                 rectTransform.anchorMax = new Vector2(0, 0.5f);
@@ -100,8 +96,6 @@ public class Player : MonoBehaviour
             }
             else if (parentGO.name == "Player3(Clone)")
             {
-                /*parentGOposition = new Vector3(0, 0, 0);
-                parentGOrotation = new Vector3(0, 0, -90);*/
                 rectTransform.anchorMin = new Vector2(0.5f, 1);
                 rectTransform.anchorMax = new Vector2(0.5f, 1);
 
@@ -122,8 +116,6 @@ public class Player : MonoBehaviour
             }
             else if (parentGO.name == "Player4(Clone)")
             {
-                /*parentGOposition = new Vector3(0, 0, 0);
-                parentGOrotation = new Vector3(0, 0, -90);*/
                 rectTransform.anchorMin = new Vector2(1, 0.5f);
                 rectTransform.anchorMax = new Vector2(1, 0.5f);
 
@@ -142,9 +134,6 @@ public class Player : MonoBehaviour
                 // Set scale (X = 1, Y = 1, Z = 1)
                 rectTransform.localScale = new Vector3(1, 1, 1);
             }
-            /*parentGO.transform.localPosition = parentGOposition;
-            parentGO.transform.localRotation = Quaternion.Euler(parentGOrotation);
-            parentGO.transform.localScale = Vector3.one;*/
         }
 
         // Set up the player's avatar and name from custom properties
@@ -182,10 +171,8 @@ public class Player : MonoBehaviour
         UpdateCardVisibility();
         AddThisPlayerToList();
         // Add player to GamePlayManager's list
-        //photonView.RPC("AddThisPlayerToList", RpcTarget.AllBuffered);
     }
 
-    //[PunRPC]
     private void AddThisPlayerToList()
     {
         GamePlayManager.players.Add(this);
@@ -254,7 +241,7 @@ public class Player : MonoBehaviour
             }
         }
     }
-
+ 
     public void OnTurn()
     {
         unoClicked = false;

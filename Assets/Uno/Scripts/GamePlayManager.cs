@@ -109,9 +109,13 @@ public class GamePlayManager : MonoBehaviour
         currentPlayerIndex = 0;
         //players[0].SetAvatarProfile(GameManager.PlayerAvatarProfile);
 
-        CreateDeck();
-        cards.Shuffle();
-        StartCoroutine(DealCards(7));
+        //CreateDeck();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("CreateDeck", RpcTarget.All);
+            photonView.RPC("DealCardsMethod", RpcTarget.All, 7);
+        }
+        //StartCoroutine(DealCards(7));
     }
 
     [PunRPC]
@@ -132,6 +136,8 @@ public class GamePlayManager : MonoBehaviour
                 cards.Add(CreateCardOnDeck((CardType)j, (CardValue)i));
             }
         }
+
+        cards.Shuffle();
     }
 
     Card CreateCardOnDeck(CardType t, CardValue v)
@@ -145,15 +151,21 @@ public class GamePlayManager : MonoBehaviour
         return temp;
     }
 
+    [PunRPC]
+    private void DealCardsMethod(int NumberOfCards)
+    {
+        StartCoroutine(DealCards(NumberOfCards));
+    }
+
     IEnumerator DealCards(int total)
     {
         yield return new WaitForSeconds(1f);
-        for (int t = 0; t < total; t++)
+        for (int i = 0; i < players.Count; i++) // Loop through each player
         {
-            for (int i = 0; i < players.Count; i++)
+            for (int t = 0; t < total; t++) // Give all cards to the current player
             {
                 PickCardFromDeck(players[i]);
-                yield return new WaitForSeconds(cardDealTime);
+                yield return new WaitForSeconds(cardDealTime); // Wait for the delay between card deals
             }
         }
 
@@ -215,7 +227,6 @@ public class GamePlayManager : MonoBehaviour
         cards.RemoveAt(0);
         GameManager.PlaySound(throw_card_clip);
         return temp;
-
     }
 
     /*    public void PutCardToWastePile(Card c, Player p = null)
@@ -302,15 +313,7 @@ public class GamePlayManager : MonoBehaviour
             }
             GameManager.PlaySound(draw_card_clip);
         }
-/*
-        CurrentType = c.Type;
-        CurrentValue = c.Value;
 
-        wasteCards.Add(c); // Add to the wasteCards list
-        c.IsOpen = true;
-        c.transform.SetParent(cardWastePile.transform, true);
-        c.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1), c.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
-*/
         if (p != null)
         {
             if (p.cardsPanel.cards.Count == 0)
@@ -364,8 +367,19 @@ public class GamePlayManager : MonoBehaviour
         // Create a new card or find an existing one based on type and value
         // You could instantiate a new card prefab or search in the player's hand for this card
 
-        GameObject cardObject = Instantiate(cardPrefab);  // Create a new GameObject
-        cardObject.transform.SetParent(players[currentPlayerIndex].transform, false);
+        GameObject cardObject = Instantiate(cardPrefab,new Vector3(0,0,0),Quaternion.Euler(new Vector3(0,0,0)), players[currentPlayerIndex].transform);  // Create a new GameObject
+        //cardObject.transform.SetParent(players[currentPlayerIndex].transform, false);
+        Card card = cardObject.GetComponent<Card>();
+        card.Type = type;
+        card.Value = value;
+
+        return card;
+    }
+
+    private Card CreateCard(CardType type, CardValue value, GameObject CardPileContainer)
+    {
+        GameObject cardObject = Instantiate(cardPrefab, new Vector3(0, 0, 0), Quaternion.Euler(new Vector3(0, 0, 0)), CardPileContainer.transform);  // Create a new GameObject
+        //cardObject.transform.SetParent(players[currentPlayerIndex].transform, false);
         Card card = cardObject.GetComponent<Card>();
         card.Type = type;
         card.Value = value;
@@ -393,7 +407,6 @@ public class GamePlayManager : MonoBehaviour
         Debug.Log("Card is " + cardType + " " + cardValue);
         if (card != null)
         {
-
             // Sync the waste pile visually
             wasteCards.Add(card);
             card.IsOpen = true;
