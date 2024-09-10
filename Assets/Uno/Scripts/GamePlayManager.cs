@@ -164,7 +164,11 @@ public class GamePlayManager : MonoBehaviour
             a++;
         }
 
-        PutFirstCardToWastePile(cards[a]);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            RPC_SyncWastePile(cards[a]);
+        }
+        
         cards.RemoveAt(a);
 
         for (int i = 0; i < players.Count; i++)
@@ -282,11 +286,6 @@ public class GamePlayManager : MonoBehaviour
                 }
             }
         }*/
-    public void PutFirstCardToWastePile(Card c)
-    {
-        RPC_SyncWastePile(c);
-        wasteCards.Add(c); // Add to the wasteCards list
-    }
     public void PutCardToWastePile(Card c, Player p = null)
     {
         if (p == null)

@@ -25,6 +25,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         SetUIInteractable(false);
         // Don't disconnect unless necessary
+        PhotonNetwork.Disconnect();
         if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.NickName = PlayerPrefs.GetString("PlayerName");
