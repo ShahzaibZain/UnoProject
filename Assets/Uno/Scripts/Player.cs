@@ -173,6 +173,7 @@ public class Player : MonoBehaviour
         // Add player to GamePlayManager's list
     }
 
+
     private void AddThisPlayerToList()
     {
         GamePlayManager.players.Add(this);
@@ -190,14 +191,6 @@ public class Player : MonoBehaviour
             avatarImage.sprite = Resources.Load<Sprite>("Avatar/" + p.avatarIndex);
     }
 
-    bool isCurrentPlayerTurn
-    {
-        get
-        {
-            return GamePlayManager.instance.CurrentPlayer == this;
-        }
-    }
-
 
     public bool Timer
     {
@@ -209,7 +202,7 @@ public class Player : MonoBehaviour
         {
             CancelInvoke("UpdateTimer");
             timerOjbect.SetActive(value);
-            if (value)
+            if (value && photonView.IsMine)
             {
                 timerImage.fillAmount = 1f;
                 InvokeRepeating("UpdateTimer", 0f, .1f);
@@ -221,15 +214,17 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void SetTimer(bool isActive)
+    {
+        Timer = isActive;
+    }
+
     void UpdateTimer()
     {
-        if (!isCurrentPlayerTurn) return;  // Only allow the current player to run the timer
-
         //timerImage.fillAmount -= 0.1f / totalTimer;
         if (timerImage.fillAmount <= 0)
         {
-            OnTurnEnd();
-            /*if (choosingColor)
+            if (choosingColor)
             {
                 if (isUserPlayer)
                 {
@@ -250,14 +245,12 @@ public class Player : MonoBehaviour
             {
                 //photonView.RPC("OnTurnEnd", RpcTarget.AllBuffered);
                 OnTurnEnd();
-            }*/
+            }
         }
     }
- 
+
     public void OnTurn()
     {
-        if (!GamePlayManager.instance.CurrentPlayer == this)
-        { return; }
         unoClicked = false;
         pickFromDeck = false;
         Timer = true;
@@ -340,6 +333,7 @@ public class Player : MonoBehaviour
         {
             item.SetGaryColor(false);
         }
+        GamePlayManager.instance.EndTurn(); // End the turn and pass to the next player
     }
 
     public void ShowMessage(string message, bool playStarParticle = false)
@@ -424,4 +418,75 @@ public class Player : MonoBehaviour
             }
         }
     }
+
+
+    /*#region NEW TRY
+    public void OnTurn()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // Deactivate timers for all players
+            foreach (Player player in GamePlayManager.instance.players)
+            {
+                player.Timer = false;
+            }
+
+            // Activate timer for the current player
+            Timer = true;
+
+            unoClicked = false;
+            pickFromDeck = false;
+
+            if (isUserPlayer)
+            {
+                UpdateCardColor();
+                if (cardsPanel.AllowedCard.Count == 0)
+                {
+                    GamePlayManager.instance.EnableDeckClick();
+                }
+            }
+        }
+    }
+
+    void UpdateTimer()
+    {
+        if (!isCurrentPlayerTurn) return;  // Only allow the current player to run the timer
+
+        timerImage.fillAmount -= 0.1f / totalTimer;
+        if (timerImage.fillAmount <= 0)
+        {
+            if (choosingColor)
+            {
+                if (isUserPlayer)
+                {
+                    GamePlayManager.instance.colorChoose.HidePopup();
+                }
+                ChooseBestColor();
+            }
+            else if (GamePlayManager.instance.IsDeckArrow)
+            {
+                GamePlayManager.instance.OnDeckClick();
+            }
+            else if (cardsPanel.AllowedCard.Count > 0)
+            {
+                OnCardClick(FindBestPutCard());
+            }
+            else
+            {
+                OnTurnEnd();
+            }
+        }
+    }
+
+    bool isCurrentPlayerTurn
+    {
+        get
+        {
+            // Check if this player is the current player whose turn it is
+            return PhotonNetwork.IsMasterClient && GamePlayManager.instance.CurrentPlayer == this;
+        }
+    }
+
+
+    #endregion*/
 }
