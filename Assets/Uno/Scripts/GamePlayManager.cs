@@ -81,7 +81,10 @@ public class GamePlayManager : MonoBehaviour
         Input.multiTouchEnabled = false;
         Time.timeScale = 1;
         OnApplicationPause(false);
-        //photonView.RPC("MultiplayerGameModeMethod", RpcTarget.MasterClient);
+/*        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("MultiplayerGameModeMethod", RpcTarget.All);
+        }*/
         StartCoroutine(StartMultiPlayerGameMode());
 
     }
@@ -95,7 +98,7 @@ public class GamePlayManager : MonoBehaviour
     IEnumerator StartMultiPlayerGameMode()
     {
         loadingView.SetActive(true);
-        yield return new WaitForSeconds(Random.Range(3f, 10f));
+        yield return new WaitForSeconds(5);
         loadingView.SetActive(false);
         cardDeckBtn.SetActive(true);
         cardWastePile.gameObject.SetActive(true);
@@ -160,9 +163,9 @@ public class GamePlayManager : MonoBehaviour
     IEnumerator DealCards(int total)
     {
         yield return new WaitForSeconds(1f);
-        for (int i = 0; i < players.Count; i++) // Loop through each player
+        for (int t = 0; t < total; t++) 
         {
-            for (int t = 0; t < total; t++) // Give all cards to the current player
+            for (int i = 0; i < players.Count; i++) 
             {
                 PickCardFromDeck(players[i]);
                 yield return new WaitForSeconds(cardDealTime); // Wait for the delay between card deals
@@ -176,11 +179,12 @@ public class GamePlayManager : MonoBehaviour
             a++;
         }
 
-        if (PhotonNetwork.IsMasterClient)
+/*        if (PhotonNetwork.IsMasterClient)
         {
-            RPC_SyncWastePile(cards[a]);
-        }
-        
+        }*/
+        RPC_SyncWastePile(cards[a]);
+
+
         cards.RemoveAt(a);
 
         for (int i = 0; i < players.Count; i++)
@@ -418,7 +422,10 @@ public class GamePlayManager : MonoBehaviour
 
     public void RPC_SyncWastePile(Card card)
     {
-        photonView.RPC("SyncWastePile", RpcTarget.All, card.Type, card.Value);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("SyncWastePile", RpcTarget.All, card.Type, card.Value);
+        }
     }
 
 

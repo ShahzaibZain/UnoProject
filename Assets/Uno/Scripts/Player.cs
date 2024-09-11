@@ -190,6 +190,15 @@ public class Player : MonoBehaviour
             avatarImage.sprite = Resources.Load<Sprite>("Avatar/" + p.avatarIndex);
     }
 
+    bool isCurrentPlayerTurn
+    {
+        get
+        {
+            return GamePlayManager.instance.CurrentPlayer == this;
+        }
+    }
+
+
     public bool Timer
     {
         get
@@ -214,10 +223,13 @@ public class Player : MonoBehaviour
 
     void UpdateTimer()
     {
+        if (!isCurrentPlayerTurn) return;  // Only allow the current player to run the timer
+
         //timerImage.fillAmount -= 0.1f / totalTimer;
         if (timerImage.fillAmount <= 0)
         {
-            if (choosingColor)
+            OnTurnEnd();
+            /*if (choosingColor)
             {
                 if (isUserPlayer)
                 {
@@ -238,12 +250,14 @@ public class Player : MonoBehaviour
             {
                 //photonView.RPC("OnTurnEnd", RpcTarget.AllBuffered);
                 OnTurnEnd();
-            }
+            }*/
         }
     }
  
     public void OnTurn()
     {
+        if (!GamePlayManager.instance.CurrentPlayer == this)
+        { return; }
         unoClicked = false;
         pickFromDeck = false;
         Timer = true;
@@ -305,15 +319,6 @@ public class Player : MonoBehaviour
         c.onClick = null;
         c.IsClickable = false;
     }
-
-    /*    public void OnCardClick(Card c)
-        {
-            if (Timer)
-            {
-                GamePlayManager.instance.PutCardToWastePile(c, this);
-                OnTurnEnd();
-            }
-        }*/
 
     public void OnCardClick(Card c)
     {
