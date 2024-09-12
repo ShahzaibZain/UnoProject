@@ -174,10 +174,15 @@ PrefabInstance:
       propertyPath: isUserPlayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1139637741733819256, guid: fee619b909d4a58409d23fc766a58f85,
+        type: 3}
+      propertyPath: m_FillAmount
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1761390144223187709, guid: fee619b909d4a58409d23fc766a58f85,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4282314486222402872, guid: fee619b909d4a58409d23fc766a58f85,
         type: 3}

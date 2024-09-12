@@ -32,11 +32,26 @@ public class Player : MonoBehaviour
     private Vector3 parentGOrotation;
     public bool MyTurn;
 
+    public void SetMyTurn(bool value)
+    {
+        MyTurn = value;
+
+        if (value)
+        {
+            Debug.Log(this.parentGO.name + "'s Turn");
+        }
+        else
+        {
+            Debug.Log("Not" + this.parentGO.name + "'s Turn");
+        }
+        OnTurn(MyTurn);
+    }
+
     private void Awake()
     {
+        MyTurn = false;
         GamePlayManager = FindObjectOfType<GamePlayManager>();
         photonView = GetComponent<PhotonView>();
-        MyTurn = false;
     }
 
     private void Start()
@@ -191,7 +206,7 @@ public class Player : MonoBehaviour
         {
             CancelInvoke("UpdateTimer");
             timerOjbect.SetActive(value);
-            if (value && photonView.IsMine)
+            if (value /*&& photonView.IsMine*/)
             {
                 timerImage.fillAmount = 1f;
                 InvokeRepeating("UpdateTimer", 0f, .1f);
@@ -203,61 +218,53 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void SetTimer(bool isActive)
-    {
-        Timer = isActive;
-    }
-
     void UpdateTimer()
     {
         //timerImage.fillAmount -= 0.1f / totalTimer;
         if (timerImage.fillAmount <= 0)
         {
+            Debug.Log("Timer ended");
             if (choosingColor)
             {
+                GamePlayManager.instance.colorChoose.HidePopup();
+            }
+            //OnTurnEnd();
+            GamePlayManager.instance.NextTurn();
+        }
+    }
+
+    public void OnTurn(bool isTurn)
+    {
+        // If it's this player's turn
+        if (isTurn)
+        {
+            Timer = true;
+            if (photonView.IsMine)
+            {
+                unoClicked = false;
+                pickFromDeck = false;
+                
+
                 if (isUserPlayer)
                 {
-                    GamePlayManager.instance.colorChoose.HidePopup();
-                }
-                //ChooseBestColor();
-            }
-            /*else if (GamePlayManager.instance.IsDeckArrow)
-            {
-                //GamePlayManager.instance.OnDeckClick();
-            }
-            else if (cardsPanel.AllowedCard.Count > 0)
-            {
-                //photonView.RPC("OnCardClick", RpcTarget.AllBuffered, FindBestPutCard());
-                OnCardClick(FindBestPutCard());
-            }
-            else
-            {
-                //photonView.RPC("OnTurnEnd", RpcTarget.AllBuffered);
-                OnTurnEnd();
-            }*/
-            OnTurnEnd();
-        }
-    }
+                    UpdateCardColor();
 
-    public void OnTurn()
-    {
-        if (MyTurn)
+                    // If no valid cards to play, enable deck click (to pick a card from the deck)
+                    if (cardsPanel.AllowedCard.Count == 0)
+                    {
+                        GamePlayManager.instance.EnableDeckClick();
+                    }
+                }
+            }
+            
+        }
+        else
         {
-            unoClicked = false;
-            pickFromDeck = false;
-            Timer = true;
-
-            if (isUserPlayer)
-            {
-                UpdateCardColor();
-                if (cardsPanel.AllowedCard.Count == 0)
-                {
-                    GamePlayManager.instance.EnableDeckClick();
-                }
-            }
+            // Turn off the timer for players whose turn it is not
+            Timer = false;
         }
-        
     }
+
 
     public void UpdateCardColor()
     {
@@ -285,18 +292,21 @@ public class Player : MonoBehaviour
     }
 
     public void AddCard(Card c)
-    {
+{
         cardsPanel.cards.Add(c);
         c.transform.SetParent(cardsPanel.transform);
-        if (isUserPlayer)
+        if (photonView.IsMine)
         {
-            c.onClick = OnCardClick;
-            c.IsClickable = false;
-        }
-        else
-        {
-            c.SetGaryColor(true); // Hide the cards for non-user players
-            c.IsClickable = false;
+            if (isUserPlayer)
+            {
+                c.onClick = OnCardClick;
+                c.IsClickable = false;
+            }
+            else
+            {
+                c.SetGaryColor(true); // Hide the cards for non-user players
+                c.IsClickable = false;
+            }
         }
     }
 
@@ -309,25 +319,27 @@ public class Player : MonoBehaviour
 
     public void OnCardClick(Card c)
     {
-        if (Timer)
+/*        if (Timer)
         {
-            // Broadcast the card to all players before adding to the waste
-            GamePlayManager.instance.RPC_SyncWastePile(c);
-            GamePlayManager.instance.PutCardToWastePile(c, this);
-            OnTurnEnd();
-        }
+
+        }*/
+        // Broadcast the card to all players before adding to the waste
+        GamePlayManager.instance.RPC_SyncWastePile(c);
+        GamePlayManager.instance.PutCardToWastePile(c, this);
+        OnTurnEnd();
+        GamePlayManager.instance.NextTurn();
     }
 
 
     public void OnTurnEnd()
     {
-        if (!choosingColor) Timer = false;
+        //Timer = false;
         cardsPanel.UpdatePos();
         foreach (var item in cardsPanel.cards)
         {
             item.SetGaryColor(false);
         }
-        GamePlayManager.instance.EndTurn(); // End the turn and pass to the next player
+        //GamePlayManager.instance.EndTurn(); // End the turn and pass to the next player
     }
 
     public void ShowMessage(string message, bool playStarParticle = false)
@@ -348,7 +360,7 @@ public class Player : MonoBehaviour
         return allow[0];
     }
 
-    public void ChooseBestColor()
+/*    public void ChooseBestColor()
     {
         CardType temp = CardType.Other;
         if (cardsPanel.cards.Count == 1)
@@ -379,7 +391,7 @@ public class Player : MonoBehaviour
             else
                 GamePlayManager.instance.SelectColor(Random.Range(1, 5));
         }
-    }
+    }*/
 
     public int GetTotalPoints()
     {
@@ -413,74 +425,4 @@ public class Player : MonoBehaviour
         }
     }
 
-
-    /*#region NEW TRY
-    public void OnTurn()
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // Deactivate timers for all players
-            foreach (Player player in GamePlayManager.instance.players)
-            {
-                player.Timer = false;
-            }
-
-            // Activate timer for the current player
-            Timer = true;
-
-            unoClicked = false;
-            pickFromDeck = false;
-
-            if (isUserPlayer)
-            {
-                UpdateCardColor();
-                if (cardsPanel.AllowedCard.Count == 0)
-                {
-                    GamePlayManager.instance.EnableDeckClick();
-                }
-            }
-        }
-    }
-
-    void UpdateTimer()
-    {
-        if (!isCurrentPlayerTurn) return;  // Only allow the current player to run the timer
-
-        timerImage.fillAmount -= 0.1f / totalTimer;
-        if (timerImage.fillAmount <= 0)
-        {
-            if (choosingColor)
-            {
-                if (isUserPlayer)
-                {
-                    GamePlayManager.instance.colorChoose.HidePopup();
-                }
-                ChooseBestColor();
-            }
-            else if (GamePlayManager.instance.IsDeckArrow)
-            {
-                GamePlayManager.instance.OnDeckClick();
-            }
-            else if (cardsPanel.AllowedCard.Count > 0)
-            {
-                OnCardClick(FindBestPutCard());
-            }
-            else
-            {
-                OnTurnEnd();
-            }
-        }
-    }
-
-    bool isCurrentPlayerTurn
-    {
-        get
-        {
-            // Check if this player is the current player whose turn it is
-            return PhotonNetwork.IsMasterClient && GamePlayManager.instance.CurrentPlayer == this;
-        }
-    }
-
-
-    #endregion*/
 }

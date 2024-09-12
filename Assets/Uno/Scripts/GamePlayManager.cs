@@ -40,7 +40,7 @@ public class GamePlayManager : MonoBehaviour
     public ParticleSystem starParticle;
     public List<GameObject> playerObject;
     public GameObject loseTimerAnimation;
-    private List<Card> cards;
+    public List<Card> cards;
     private List<Card> wasteCards;
 
     public CardType CurrentType
@@ -68,7 +68,7 @@ public class GamePlayManager : MonoBehaviour
     int fastForwardTime = 0;
     bool setup = false, multiplayerLoaded = false, gameOver = false;
 
-    public GameObject playerPrefab; 
+    public GameObject playerPrefab;
     public PhotonView photonView;
     public GameObject cardPrefab;
 
@@ -77,18 +77,15 @@ public class GamePlayManager : MonoBehaviour
         instance = this;
         Input.multiTouchEnabled = false;
         Time.timeScale = 1;
-        OnApplicationPause(false);
-/*        if (PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC("MultiplayerGameModeMethod", RpcTarget.All);
-        }*/
+
         StartCoroutine(StartMultiPlayerGameMode());
+        
     }
 
     IEnumerator StartMultiPlayerGameMode()
     {
         loadingView.SetActive(true);
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(0);
         loadingView.SetActive(false);
         cardDeckBtn.SetActive(true);
         cardWastePile.gameObject.SetActive(true);
@@ -105,10 +102,11 @@ public class GamePlayManager : MonoBehaviour
         {
             photonView.RPC("SyncCardDeck", RpcTarget.All);
             photonView.RPC("DealCardsMethod", RpcTarget.All, 7);
+            //photonView.RPC("UpdatePlayerTurn", RpcTarget.All, currentPlayerIndex);
         }
     }
 
-    
+
     [PunRPC]
     void SyncCardDeck()
     {
@@ -157,9 +155,9 @@ public class GamePlayManager : MonoBehaviour
     IEnumerator DealCards(int total)
     {
         yield return new WaitForSeconds(1f);
-        for (int t = 0; t < total; t++) 
+        for (int t = 0; t < total; t++)
         {
-            for (int i = 0; i < players.Count; i++) 
+            for (int i = 0; i < players.Count; i++)
             {
                 PickCardFromDeck(players[i]);
                 yield return new WaitForSeconds(cardDealTime); // Wait for the delay between card deals
@@ -173,11 +171,7 @@ public class GamePlayManager : MonoBehaviour
             a++;
         }
 
-/*        if (PhotonNetwork.IsMasterClient)
-        {
-        }*/
-        RPC_SyncWastePile(cards[a]);
-
+        RPC_SyncWastePileAtStart(cards[a]);
 
         cards.RemoveAt(a);
 
@@ -187,8 +181,40 @@ public class GamePlayManager : MonoBehaviour
         }
 
         setup = true;
-        CurrentPlayer.OnTurn();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("UpdatePlayerTurn", RpcTarget.All, players[currentPlayerIndex].photonView.OwnerActorNr);
+        }
     }
+
+    #region SYNC PILE AT START
+    [PunRPC]
+    void SyncWastePileAtStart(CardType cardType, CardValue cardValue)
+    {
+        CurrentType = cardType;
+        CurrentValue = cardValue;
+        Card card = CreateCard(cardType, cardValue, cardDeckBtn);
+        Debug.Log("Card is " + cardType + " " + cardValue);
+        if (card != null)
+        {
+            // Sync the waste pile visually
+            wasteCards.Add(card);
+            card.IsOpen = true;
+            card.transform.SetParent(cardWastePile.transform, true);
+            card.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1),
+                card.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
+        }
+    }
+
+    public void RPC_SyncWastePileAtStart(Card card)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("SyncWastePileAtStart", RpcTarget.All, card.Type, card.Value);
+            photonView.RPC("UpdatePos", RpcTarget.All);
+        }
+    }
+    #endregion
 
     IEnumerator DealCardsToPlayer(Player p, int NoOfCard = 1, float delay = 0f)
     {
@@ -227,74 +253,6 @@ public class GamePlayManager : MonoBehaviour
         return temp;
     }
 
-    /*    public void PutCardToWastePile(Card c, Player p = null)
-        {
-            if (p != null)
-            {
-                p.RemoveCard(c);
-                if (p.cardsPanel.cards.Count == 1 && !p.unoClicked)
-                {
-                    ApplyUnoCharge(CurrentPlayer);
-                }
-                GameManager.PlaySound(draw_card_clip);
-            }
-
-            CurrentType = c.Type;
-            CurrentValue = c.Value;
-            wasteCards.Add(c);
-            c.IsOpen = true;
-            c.transform.SetParent(cardWastePile.transform, true);
-            c.SetTargetPosAndRot(new Vector3(Random.Range(-15f, 15f), Random.Range(-15f, 15f), 1), c.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
-
-            if (p != null)
-            {
-                if (p.cardsPanel.cards.Count == 0)
-                {
-                    Invoke("SetupGameOver", 2f);
-                    return;
-                }
-                if (c.Type == CardType.Other)
-                {
-                    CurrentPlayer.Timer = true;
-                    CurrentPlayer.choosingColor = true;
-                    if (CurrentPlayer.isUserPlayer)
-                    {
-                        colorChoose.ShowPopup();
-                    }
-                    else
-                    {
-                        //Invoke("ChooseColorforAI", Random.Range(3f, 9f));
-                    }
-                }
-                else
-                {
-                    if (c.Value == CardValue.Reverse)
-                    {
-                        clockwiseTurn = !clockwiseTurn;
-                        cardEffectAnimator.Play(clockwiseTurn ? "ClockWiseAnim" : "AntiClockWiseAnim");
-                        Invoke("NextPlayerTurn", 1.5f);
-                    }
-                    else if (c.Value == CardValue.Skip)
-                    {
-                        NextPlayerIndex();
-                        CurrentPlayer.ShowMessage("Turn Skipped!");
-                        Invoke("NextPlayerTurn", 1.5f);
-                    }
-                    else if (c.Value == CardValue.DrawTwo)
-                    {
-                        NextPlayerIndex();
-                        CurrentPlayer.ShowMessage("+2");
-                        wildCardParticle.Emit(30);
-                        StartCoroutine(DealCardsToPlayer(CurrentPlayer, 2, .5f));
-                        Invoke("NextPlayerTurn", 1.5f);
-                    }
-                    else
-                    {
-                        NextPlayerTurn();
-                    }
-                }
-            }
-        }*/
     public void PutCardToWastePile(Card c, Player p = null)
     {
         if (p == null)
@@ -323,7 +281,7 @@ public class GamePlayManager : MonoBehaviour
 
             if (c.Type == CardType.Other)
             {
-                CurrentPlayer.Timer = true;
+                //CurrentPlayer.Timer = true;
                 CurrentPlayer.choosingColor = true;
                 if (CurrentPlayer.isUserPlayer)
                 {
@@ -348,6 +306,7 @@ public class GamePlayManager : MonoBehaviour
                 CurrentPlayer.ShowMessage("+2");
                 wildCardParticle.Emit(30);
                 StartCoroutine(DealCardsToPlayer(CurrentPlayer, 2, .5f));
+                NextPlayerIndex();
                 Invoke("NextTurn", 1.5f);
             }
             else
@@ -359,7 +318,7 @@ public class GamePlayManager : MonoBehaviour
 
     public Card CreateCard(CardType type, CardValue value)
     {
-        GameObject cardObject = Instantiate(cardPrefab,new Vector3(0,0,0),Quaternion.Euler(new Vector3(0,0,0)), players[currentPlayerIndex].transform);  // Create a new GameObject
+        GameObject cardObject = Instantiate(cardPrefab, new Vector3(0, 0, 0), Quaternion.Euler(new Vector3(0, 0, 0)), players[currentPlayerIndex].transform);  // Create a new GameObject
         cardObject.transform.localPosition = Vector3.zero;
         Card card = cardObject.GetComponent<Card>();
         card.Type = type;
@@ -378,15 +337,15 @@ public class GamePlayManager : MonoBehaviour
         return card;
     }
 
-/*    public Card GetCardById(int cardID)
-    {
-        // Loop through the list and find the card with the matching cardID
-        if (CardManager.instance.allCards.ContainsKey(cardID))
+    /*    public Card GetCardById(int cardID)
         {
-            return CardManager.instance.allCards[cardID];
-        }
-        return null;  // Return null if no card with the given ID is found
-    }*/
+            // Loop through the list and find the card with the matching cardID
+            if (CardManager.instance.allCards.ContainsKey(cardID))
+            {
+                return CardManager.instance.allCards[cardID];
+            }
+            return null;  // Return null if no card with the given ID is found
+        }*/
 
     [PunRPC]
     void SyncWastePile(CardType cardType, CardValue cardValue)
@@ -405,14 +364,15 @@ public class GamePlayManager : MonoBehaviour
                 card.transform.localRotation.eulerAngles.z + Random.Range(-15f, 15f));
         }
     }
-
     public void RPC_SyncWastePile(Card card)
     {
-        if (PhotonNetwork.IsMasterClient)
+        /*if (PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("SyncWastePile", RpcTarget.All, card.Type, card.Value);
             photonView.RPC("UpdatePos", RpcTarget.All);
-        }
+        }*/
+        photonView.RPC("SyncWastePile", RpcTarget.All, card.Type, card.Value);
+        photonView.RPC("UpdatePos", RpcTarget.All);
     }
 
     [PunRPC]
@@ -424,78 +384,84 @@ public class GamePlayManager : MonoBehaviour
         }
     }
 
-/*    [PunRPC]
-    public void RPC_SetCurrentPlayerTurn(int playerIndex)
-    {
-        currentPlayerIndex = playerIndex; 
-        if (CurrentPlayer.photonView.IsMine) 
-        {
-            CurrentPlayer.OnTurn(); 
-        }
-    }*/
-
     #region
     public void NextTurn()
     {
-        if (PhotonNetwork.IsMasterClient)
+        /*if (PhotonNetwork.IsMasterClient)
         {
-            // Update currentPlayerIndex to the next player
             int step = clockwiseTurn ? 1 : -1;
             currentPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
-
+            int CurrentPlayerID = players[currentPlayerIndex].photonView.OwnerActorNr;
             // Notify all clients of the turn change
-            photonView.RPC("UpdatePlayerTurn", RpcTarget.All, currentPlayerIndex);
-        }
+            photonView.RPC("UpdatePlayerTurn", RpcTarget.All, CurrentPlayerID);
+        }*/
+        int step = clockwiseTurn ? 1 : -1;
+        currentPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
+        int CurrentPlayerID = players[currentPlayerIndex].photonView.OwnerActorNr;
+        // Notify all clients of the turn change
+        photonView.RPC("UpdatePlayerTurn", RpcTarget.All, CurrentPlayerID);
+    }
+    public void NextPlayerIndex()
+    {
+        int step = clockwiseTurn ? 1 : -1;
+        currentPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
     }
 
-
     [PunRPC]
-    void UpdatePlayerTurn(int playerIndex)
+    void UpdatePlayerTurn(int photonPlayerID)
     {
-        if (playerIndex >= 0 && playerIndex < players.Count)
+        /*if (playerIndex >= 0 && playerIndex < players.Count)
         {
             // Iterate over all players and set their timer based on the current player's turn
             for (int i = 0; i < players.Count; i++)
             {
-                bool isTurn = players[i].photonView.Controller.ActorNumber == players[playerIndex].photonView.Controller.ActorNumber;
-                players[i].MyTurn = isTurn;
+                if (players[i].photonView.ControllerActorNr == players[playerIndex].photonView.ControllerActorNr)
+                {
+                    players[i].SetMyTurn(true);
+                    Debug.Log(players[i].parentGO.name + "'s turn");
+                }
+
+                else
+                {
+                    // Ensure MyTurn is false for all other players
+                    players[i].SetMyTurn(false);
+                    Debug.Log("Not" + players[i].parentGO.name + "'s turn");
+                }
             }
+
+
         }
         else
         {
             Debug.LogError("Invalid playerIndex received: " + playerIndex);
+        }*/
+        foreach (Player player in players)
+        {
+            if (player.photonView.OwnerActorNr == photonPlayerID)
+            {
+                // This player is the current player
+
+                player.SetMyTurn(true);
+
+            }
+            else
+            {
+                // Not the current player, disable their turn
+                player.SetMyTurn(false);
+            }
         }
+
     }
     #endregion
 
     public void EndTurn()
     {
-        /*currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
-        if (PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC("RPC_SetCurrentPlayerTurn", RpcTarget.All, currentPlayerIndex);
-        }*/
-            GamePlayManager.instance.NextTurn();
-    }
-
-    public void NextPlayerIndex()
-    {
-        int step = clockwiseTurn ? 1 : -1;
-        do
-        {
-            currentPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
-        } while (!players[currentPlayerIndex].isInRoom);
+        NextTurn();
     }
 
     private int Mod(int x, int m)
     {
         return (x % m + m) % m;
-    }
-
-    public void NextPlayerTurn()
-    {
-        NextPlayerIndex();
-        CurrentPlayer.OnTurn();
     }
 
     public void OnColorSelect(int i)
@@ -525,6 +491,7 @@ public class GamePlayManager : MonoBehaviour
             NextPlayerIndex();
             CurrentPlayer.ShowMessage("+4");
             StartCoroutine(DealCardsToPlayer(CurrentPlayer, 4, .5f));
+            NextPlayerIndex();
             Invoke("NextTurn", 2f);
             GameManager.PlaySound(choose_color_clip);
         }
@@ -541,13 +508,12 @@ public class GamePlayManager : MonoBehaviour
 
         if (arrowObject.activeInHierarchy)
         {
-
             arrowObject.SetActive(false);
             CurrentPlayer.pickFromDeck = true;
             PickCardFromDeck(CurrentPlayer, true);
             if (CurrentPlayer.cardsPanel.AllowedCard.Count == 0 || (!CurrentPlayer.Timer && CurrentPlayer.isUserPlayer))
             {
-                CurrentPlayer.OnTurnEnd();
+                //CurrentPlayer.OnTurnEnd();
                 NextTurn();
             }
             else
@@ -643,60 +609,15 @@ public class GamePlayManager : MonoBehaviour
             NextTurn();
         }
     }
-    void ResetGameForNextRound()
+}
+    [System.Serializable]
+    public class AvatarProfile
     {
-        CreateDeck();
-        cards.Shuffle();
-        StartCoroutine(DealCards(7));
-
-        // Set the current player index to a random player
-        currentPlayerIndex = Random.Range(0, players.Count);
-        setup = true;
-        CurrentPlayer.OnTurn();
+        public int avatarIndex;
+        public string avatarName;
     }
 
-    void OnApplicationPause(bool pauseStatus)
+    public class AvatarProfiles
     {
-        if (pauseStatus)
-        {
-            pauseTime = System.DateTime.Now;
-        }
-        else
-        {
-            if (GameManager.currentGameMode == GameMode.MultiPlayer && multiplayerLoaded && !gameOver)
-            {
-                fastForwardTime += Mathf.Clamp((int)(System.DateTime.Now - pauseTime).TotalSeconds, 0, 3600);
-                if (Time.timeScale == 1f)
-                {
-                    StartCoroutine(DoFastForward());
-                }
-            }
-        }
+        public List<AvatarProfile> profiles;
     }
-
-    IEnumerator DoFastForward()
-    {
-        Time.timeScale = 10f;
-        rayCastBlocker.SetActive(true);
-        while (fastForwardTime > 0)
-        {
-            yield return new WaitForSeconds(1f);
-            fastForwardTime--;
-        }
-        Time.timeScale = 1f;
-        rayCastBlocker.SetActive(false);
-
-    }
-}
-
-[System.Serializable]
-public class AvatarProfile
-{
-    public int avatarIndex;
-    public string avatarName;
-}
-
-public class AvatarProfiles
-{
-    public List<AvatarProfile> profiles;
-}
