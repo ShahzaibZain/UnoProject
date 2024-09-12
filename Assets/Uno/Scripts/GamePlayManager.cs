@@ -360,6 +360,7 @@ public class GamePlayManager : MonoBehaviour
     public Card CreateCard(CardType type, CardValue value)
     {
         GameObject cardObject = Instantiate(cardPrefab,new Vector3(0,0,0),Quaternion.Euler(new Vector3(0,0,0)), players[currentPlayerIndex].transform);  // Create a new GameObject
+        cardObject.transform.localPosition = Vector3.zero;
         Card card = cardObject.GetComponent<Card>();
         card.Type = type;
         card.Value = value;
@@ -369,6 +370,7 @@ public class GamePlayManager : MonoBehaviour
     private Card CreateCard(CardType type, CardValue value, GameObject CardPileContainer)
     {
         GameObject cardObject = Instantiate(cardPrefab, new Vector3(0, 0, 0), Quaternion.Euler(new Vector3(0, 0, 0)), CardPileContainer.transform);  // Create a new GameObject
+        cardObject.transform.localPosition = Vector3.zero;
         Card card = cardObject.GetComponent<Card>();
         card.Type = type;
         card.Value = value;
@@ -455,8 +457,8 @@ public class GamePlayManager : MonoBehaviour
             // Iterate over all players and set their timer based on the current player's turn
             for (int i = 0; i < players.Count; i++)
             {
-                bool isTurn = (i == playerIndex);
-                players[i].SetTimer(isTurn);
+                bool isTurn = players[i].photonView.Controller.ActorNumber == players[playerIndex].photonView.Controller.ActorNumber;
+                players[i].MyTurn = isTurn;
             }
         }
         else
@@ -515,7 +517,7 @@ public class GamePlayManager : MonoBehaviour
         {
             wildCardParticle.gameObject.SetActive(true);
             wildCardParticle.Emit(30);
-            Invoke("NextPlayerTurn", 1.5f);
+            Invoke("NextTurn", 1.5f);
             GameManager.PlaySound(choose_color_clip);
         }
         else
@@ -523,7 +525,7 @@ public class GamePlayManager : MonoBehaviour
             NextPlayerIndex();
             CurrentPlayer.ShowMessage("+4");
             StartCoroutine(DealCardsToPlayer(CurrentPlayer, 4, .5f));
-            Invoke("NextPlayerTurn", 2f);
+            Invoke("NextTurn", 2f);
             GameManager.PlaySound(choose_color_clip);
         }
     }

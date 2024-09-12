@@ -30,25 +30,14 @@ public class Player : MonoBehaviour
     public GameObject parentGO;
     private Vector3 parentGOposition;
     private Vector3 parentGOrotation;
+    public bool MyTurn;
 
     private void Awake()
     {
         GamePlayManager = FindObjectOfType<GamePlayManager>();
         photonView = GetComponent<PhotonView>();
-
+        MyTurn = false;
     }
-
-    #region PlayerConstructor
-    public int ActorNumber { get; set; }
-    public string Nickname { get; set; }
-
-    // Constructor to initialize from Photon.Realtime.Player
-    public Player(Photon.Realtime.Player photonPlayer)
-    {
-        this.ActorNumber = photonPlayer.ActorNumber;
-        this.Nickname = photonPlayer.NickName;
-    }
-    #endregion
 
     private void Start()
     {
@@ -230,11 +219,11 @@ public class Player : MonoBehaviour
                 {
                     GamePlayManager.instance.colorChoose.HidePopup();
                 }
-                ChooseBestColor();
+                //ChooseBestColor();
             }
-            else if (GamePlayManager.instance.IsDeckArrow)
+            /*else if (GamePlayManager.instance.IsDeckArrow)
             {
-                GamePlayManager.instance.OnDeckClick();
+                //GamePlayManager.instance.OnDeckClick();
             }
             else if (cardsPanel.AllowedCard.Count > 0)
             {
@@ -245,24 +234,29 @@ public class Player : MonoBehaviour
             {
                 //photonView.RPC("OnTurnEnd", RpcTarget.AllBuffered);
                 OnTurnEnd();
-            }
+            }*/
+            OnTurnEnd();
         }
     }
 
     public void OnTurn()
     {
-        unoClicked = false;
-        pickFromDeck = false;
-        Timer = true;
-
-        if (isUserPlayer)
+        if (MyTurn)
         {
-            UpdateCardColor();
-            if (cardsPanel.AllowedCard.Count == 0)
+            unoClicked = false;
+            pickFromDeck = false;
+            Timer = true;
+
+            if (isUserPlayer)
             {
-                GamePlayManager.instance.EnableDeckClick();
+                UpdateCardColor();
+                if (cardsPanel.AllowedCard.Count == 0)
+                {
+                    GamePlayManager.instance.EnableDeckClick();
+                }
             }
         }
+        
     }
 
     public void UpdateCardColor()
