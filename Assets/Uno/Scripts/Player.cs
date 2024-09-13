@@ -319,27 +319,21 @@ public class Player : MonoBehaviour
 
     public void OnCardClick(Card c)
     {
-/*        if (Timer)
-        {
-
-        }*/
         // Broadcast the card to all players before adding to the waste
         GamePlayManager.instance.RPC_SyncWastePile(c);
         GamePlayManager.instance.PutCardToWastePile(c, this);
         OnTurnEnd();
-        GamePlayManager.instance.NextTurn();
+        //GamePlayManager.instance.NextTurn();
     }
 
 
     public void OnTurnEnd()
     {
-        //Timer = false;
         cardsPanel.UpdatePos();
         foreach (var item in cardsPanel.cards)
         {
             item.SetGaryColor(false);
         }
-        //GamePlayManager.instance.EndTurn(); // End the turn and pass to the next player
     }
 
     public void ShowMessage(string message, bool playStarParticle = false)
@@ -359,39 +353,6 @@ public class Player : MonoBehaviour
         allow.Sort((x, y) => y.Type.CompareTo(x.Type));
         return allow[0];
     }
-
-/*    public void ChooseBestColor()
-    {
-        CardType temp = CardType.Other;
-        if (cardsPanel.cards.Count == 1)
-        {
-            temp = cardsPanel.cards[0].Type;
-        }
-        else
-        {
-            int max = 1;
-            for (int i = 0; i < 5; i++)
-            {
-                if (cardsPanel.GetCount((CardType)i) > max)
-                {
-                    max = cardsPanel.GetCount((CardType)i);
-                    temp = (CardType)i;
-                }
-            }
-        }
-
-        if (temp == CardType.Other)
-        {
-            GamePlayManager.instance.SelectColor(Random.Range(1, 5));
-        }
-        else
-        {
-            if (Random.value < 0.7f)
-                GamePlayManager.instance.SelectColor((int)temp);
-            else
-                GamePlayManager.instance.SelectColor(Random.Range(1, 5));
-        }
-    }*/
 
     public int GetTotalPoints()
     {

@@ -318,7 +318,7 @@ public class GamePlayManager : MonoBehaviour
 
     public Card CreateCard(CardType type, CardValue value)
     {
-        GameObject cardObject = Instantiate(cardPrefab, new Vector3(0, 0, 0), Quaternion.Euler(new Vector3(0, 0, 0)), players[currentPlayerIndex].transform);  // Create a new GameObject
+        GameObject cardObject = Instantiate(cardPrefab, new Vector3(0, 0, 0), Quaternion.Euler(new Vector3(0, 0, 0)), CurrentPlayer.transform);  // Create a new GameObject
         cardObject.transform.localPosition = Vector3.zero;
         Card card = cardObject.GetComponent<Card>();
         card.Type = type;
@@ -336,16 +336,6 @@ public class GamePlayManager : MonoBehaviour
 
         return card;
     }
-
-    /*    public Card GetCardById(int cardID)
-        {
-            // Loop through the list and find the card with the matching cardID
-            if (CardManager.instance.allCards.ContainsKey(cardID))
-            {
-                return CardManager.instance.allCards[cardID];
-            }
-            return null;  // Return null if no card with the given ID is found
-        }*/
 
     [PunRPC]
     void SyncWastePile(CardType cardType, CardValue cardValue)
@@ -384,17 +374,9 @@ public class GamePlayManager : MonoBehaviour
         }
     }
 
-    #region
+    #region NEXT TURN
     public void NextTurn()
     {
-        /*if (PhotonNetwork.IsMasterClient)
-        {
-            int step = clockwiseTurn ? 1 : -1;
-            currentPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
-            int CurrentPlayerID = players[currentPlayerIndex].photonView.OwnerActorNr;
-            // Notify all clients of the turn change
-            photonView.RPC("UpdatePlayerTurn", RpcTarget.All, CurrentPlayerID);
-        }*/
         int step = clockwiseTurn ? 1 : -1;
         currentPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
         int CurrentPlayerID = players[currentPlayerIndex].photonView.OwnerActorNr;
@@ -410,31 +392,7 @@ public class GamePlayManager : MonoBehaviour
     [PunRPC]
     void UpdatePlayerTurn(int photonPlayerID)
     {
-        /*if (playerIndex >= 0 && playerIndex < players.Count)
-        {
-            // Iterate over all players and set their timer based on the current player's turn
-            for (int i = 0; i < players.Count; i++)
-            {
-                if (players[i].photonView.ControllerActorNr == players[playerIndex].photonView.ControllerActorNr)
-                {
-                    players[i].SetMyTurn(true);
-                    Debug.Log(players[i].parentGO.name + "'s turn");
-                }
-
-                else
-                {
-                    // Ensure MyTurn is false for all other players
-                    players[i].SetMyTurn(false);
-                    Debug.Log("Not" + players[i].parentGO.name + "'s turn");
-                }
-            }
-
-
-        }
-        else
-        {
-            Debug.LogError("Invalid playerIndex received: " + playerIndex);
-        }*/
+        
         foreach (Player player in players)
         {
             if (player.photonView.OwnerActorNr == photonPlayerID)
@@ -453,11 +411,6 @@ public class GamePlayManager : MonoBehaviour
 
     }
     #endregion
-
-    public void EndTurn()
-    {
-        NextTurn();
-    }
 
     private int Mod(int x, int m)
     {
