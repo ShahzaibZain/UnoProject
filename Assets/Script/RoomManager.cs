@@ -23,13 +23,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (!PhotonNetwork.IsConnected)
-        {
-            SetUIInteractable(false);
-            PhotonNetwork.NickName = PlayerPrefs.GetString("PlayerName");
-            statusText.text = "Connecting to Photon...";
-            PhotonNetwork.ConnectUsingSettings();
-        }
+        PhotonNetwork.Disconnect();
+        SetUIInteractable(false);
+        PhotonNetwork.NickName = PlayerPrefs.GetString("PlayerName");
+        statusText.text = "Connecting to Photon...";
+        PhotonNetwork.ConnectUsingSettings();
     }
 
     public void GoToHome()

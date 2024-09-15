@@ -75,6 +75,10 @@ public class Player : MonoBehaviour
 
                 // Set size (Width = 464.884, Height = 110)
                 rectTransform.sizeDelta = new Vector2(464.884f, 110);
+                if (photonView.IsMine)
+                {
+                    GamePlayManager.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+                }
 
             }
             else if (parentGO.name == "Player2(Clone)")
@@ -87,7 +91,7 @@ public class Player : MonoBehaviour
                 rectTransform.pivot = new Vector2(0.5f, 0.5f);
 
                 // Set anchored position (Pos X = 180, Pos Y = 0)
-                rectTransform.anchoredPosition = new Vector2(180, 0);
+                rectTransform.anchoredPosition = new Vector2(100, 0);
 
                 // Set size (Width = 360, Height = 85)
                 rectTransform.sizeDelta = new Vector2(360, 85);
@@ -97,6 +101,11 @@ public class Player : MonoBehaviour
 
                 // Set scale (X = 1, Y = 1, Z = 1)
                 rectTransform.localScale = new Vector3(1, 1, 1);
+
+                if (photonView.IsMine)
+                {
+                    GamePlayManager.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, 90);
+                }
             }
             else if (parentGO.name == "Player3(Clone)")
             {
@@ -117,6 +126,10 @@ public class Player : MonoBehaviour
 
                 // Set scale (X = 1, Y = 1, Z = 1)
                 rectTransform.localScale = new Vector3(1, 1, 1);
+                if (photonView.IsMine)
+                {
+                    GamePlayManager.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, 180);
+                }
             }
             else if (parentGO.name == "Player4(Clone)")
             {
@@ -127,7 +140,7 @@ public class Player : MonoBehaviour
                 rectTransform.pivot = new Vector2(0.5f, 0.5f);
 
                 // Set anchored position (Pos X = 180, Pos Y = 0)
-                rectTransform.anchoredPosition = new Vector2(-180, 0);
+                rectTransform.anchoredPosition = new Vector2(-110, 0);
 
                 // Set size (Width = 360, Height = 85)
                 rectTransform.sizeDelta = new Vector2(360, 85);
@@ -137,6 +150,10 @@ public class Player : MonoBehaviour
 
                 // Set scale (X = 1, Y = 1, Z = 1)
                 rectTransform.localScale = new Vector3(1, 1, 1);
+                if (photonView.IsMine)
+                {
+                    GamePlayManager.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, -90);
+                }
             }
         }
 
@@ -170,13 +187,11 @@ public class Player : MonoBehaviour
             isUserPlayer = true;
             SetAvatarProfile(GameManager.PlayerAvatarProfile);
         }
-
         // Initialize card visibility based on whether this is the user player
         UpdateCardVisibility();
         AddThisPlayerToList();
         // Add player to GamePlayManager's list
     }
-
 
     private void AddThisPlayerToList()
     {
@@ -206,7 +221,7 @@ public class Player : MonoBehaviour
         {
             CancelInvoke("UpdateTimer");
             timerOjbect.SetActive(value);
-            if (value /*&& photonView.IsMine*/)
+            if (value)
             {
                 timerImage.fillAmount = 1f;
                 InvokeRepeating("UpdateTimer", 0f, .1f);
@@ -220,7 +235,7 @@ public class Player : MonoBehaviour
 
     void UpdateTimer()
     {
-        //timerImage.fillAmount -= 0.1f / totalTimer;
+        timerImage.fillAmount -= 0.1f / totalTimer;
         if (timerImage.fillAmount <= 0)
         {
             Debug.Log("Timer ended");
@@ -228,7 +243,7 @@ public class Player : MonoBehaviour
             {
                 GamePlayManager.instance.colorChoose.HidePopup();
             }
-            //OnTurnEnd();
+            OnTurnEnd();
             GamePlayManager.instance.NextTurn();
         }
     }
@@ -295,19 +310,21 @@ public class Player : MonoBehaviour
 {
         cardsPanel.cards.Add(c);
         c.transform.SetParent(cardsPanel.transform);
-        if (photonView.IsMine)
+        c.onClick = OnCardClick;
+        Debug.Log("Added OnCardClick to card: " + c.name);
+        c.IsClickable = true;
+/*        if (isUserPlayer)
         {
-            if (isUserPlayer)
-            {
-                c.onClick = OnCardClick;
-                c.IsClickable = false;
-            }
-            else
-            {
-                c.SetGaryColor(true); // Hide the cards for non-user players
-                c.IsClickable = false;
-            }
-        }
+        }*/
+/*        else
+        {
+            c.SetGaryColor(true); // Hide the cards for non-user players
+            c.IsClickable = false;
+        }*/
+        /*if (photonView.IsMine)
+        {
+            
+        }*/
     }
 
     public void RemoveCard(Card c)
@@ -319,13 +336,18 @@ public class Player : MonoBehaviour
 
     public void OnCardClick(Card c)
     {
+        Debug.Log("Calling OnCardClick");
         // Broadcast the card to all players before adding to the waste
+        Debug.Log("Calling RPC_SyncWastePile");
         GamePlayManager.instance.RPC_SyncWastePile(c);
+        Debug.Log("Calling PutCardToWastePile");
         GamePlayManager.instance.PutCardToWastePile(c, this);
+        Debug.Log("Calling OnTurnEnd");
         OnTurnEnd();
+        //Debug.Log("Changing Turn");
         //GamePlayManager.instance.NextTurn();
+        //Debug.Log("Turn Changed");
     }
-
 
     public void OnTurnEnd()
     {
@@ -334,6 +356,9 @@ public class Player : MonoBehaviour
         {
             item.SetGaryColor(false);
         }
+/*        Debug.Log("Ending Turn");
+        GamePlayManager.instance.NextTurn();
+        Debug.Log("Turn Changed");*/
     }
 
     public void ShowMessage(string message, bool playStarParticle = false)
@@ -345,13 +370,6 @@ public class Player : MonoBehaviour
             starParticleSystem.gameObject.SetActive(true);
             starParticleSystem.Emit(30);
         }
-    }
-
-    public Card FindBestPutCard()
-    {
-        List<Card> allow = cardsPanel.AllowedCard;
-        allow.Sort((x, y) => y.Type.CompareTo(x.Type));
-        return allow[0];
     }
 
     public int GetTotalPoints()
