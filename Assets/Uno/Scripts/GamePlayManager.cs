@@ -309,6 +309,7 @@ public class GamePlayManager : MonoBehaviour
     public void SyncPickCardFromDeck(int cardIndex, int playerID)
     {
         Player player = players.Find(p => p.photonView.OwnerActorNr == playerID);
+        Debug.Log("Player is " + player.transform.parent.name);
         if (player != null && cards.Count > cardIndex)
         {
             Card pickedCard = cards[cardIndex];
@@ -327,7 +328,14 @@ public class GamePlayManager : MonoBehaviour
             photonView.RPC("SyncPickCardFromDeck", RpcTarget.All, cardIndex, p.photonView.OwnerActorNr);
         }
     }
-
+    public void TakeCardFromDeck(Player p)
+    {
+        if (cards.Count > 0)
+        {
+            int cardIndex = 0;  // Always pick the top card from the deck
+            photonView.RPC("SyncPickCardFromDeck", RpcTarget.All, cardIndex, p.photonView.OwnerActorNr);
+        }
+    }
 
     public void PutCardToWastePile(Card c, Player p = null)
     {
@@ -612,19 +620,22 @@ public class GamePlayManager : MonoBehaviour
     }
 
     [PunRPC]
-    public void OnDeckClickMethod()
+    public IEnumerator OnDeckClickMethod()
     {
-        if (!setup) return;
+        if (!setup) yield return null;
 
         if (arrowObject.activeInHierarchy)
         {
             arrowObject.SetActive(false);
             CurrentPlayer.pickFromDeck = true;
-            PickCardFromDeck(CurrentPlayer);
+            Debug.Log("OnDeckClick current player is " + CurrentPlayer.gameObject.transform.parent.name);
+            TakeCardFromDeck(CurrentPlayer);
+            yield return new WaitForSeconds(0.5f);
+            Debug.Log("Changing turn after deck click");
             if (CurrentPlayer.cardsPanel.AllowedCard.Count == 0 || (!CurrentPlayer.Timer && CurrentPlayer.isUserPlayer))
             {
                 //CurrentPlayer.OnTurnEnd();
-                NextTurn();
+                Invoke("NextTurn", 2f);
             }
             else
             {
@@ -633,7 +644,7 @@ public class GamePlayManager : MonoBehaviour
         }
         else if (!CurrentPlayer.pickFromDeck && CurrentPlayer.isUserPlayer)
         {
-            PickCardFromDeck(CurrentPlayer);
+            TakeCardFromDeck(CurrentPlayer);
             CurrentPlayer.pickFromDeck = true;
             CurrentPlayer.UpdateCardColor();
         }

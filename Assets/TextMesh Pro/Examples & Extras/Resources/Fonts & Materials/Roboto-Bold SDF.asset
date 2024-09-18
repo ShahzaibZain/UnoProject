@@ -610,20 +610,6 @@ MonoBehaviour:
       m_Height: 64
     m_Scale: 1
     m_AtlasIndex: 0
-  - m_Index: 30
-    m_Metrics:
-      m_Width: 14.375
-      m_Height: 49.53125
-      m_HorizontalBearingX: 5.53125
-      m_HorizontalBearingY: 49.046875
-      m_HorizontalAdvance: 25.40625
-    m_GlyphRect:
-      m_X: 98
-      m_Y: 199
-      m_Width: 15
-      m_Height: 51
-    m_Scale: 1
-    m_AtlasIndex: 0
   - m_Index: 11
     m_Metrics:
       m_Width: 9.3125
@@ -636,6 +622,20 @@ MonoBehaviour:
       m_Y: 270
       m_Width: 11
       m_Height: 25
+    m_Scale: 1
+    m_AtlasIndex: 0
+  - m_Index: 30
+    m_Metrics:
+      m_Width: 14.375
+      m_Height: 49.53125
+      m_HorizontalBearingX: 5.53125
+      m_HorizontalBearingY: 49.046875
+      m_HorizontalAdvance: 25.40625
+    m_GlyphRect:
+      m_X: 98
+      m_Y: 199
+      m_Width: 15
+      m_Height: 51
     m_Scale: 1
     m_AtlasIndex: 0
   m_CharacterTable:
@@ -772,12 +772,12 @@ MonoBehaviour:
     m_GlyphIndex: 54
     m_Scale: 1
   - m_ElementType: 1
-    m_Unicode: 58
-    m_GlyphIndex: 30
-    m_Scale: 1
-  - m_ElementType: 1
     m_Unicode: 39
     m_GlyphIndex: 11
+    m_Scale: 1
+  - m_ElementType: 1
+    m_Unicode: 58
+    m_GlyphIndex: 30
     m_Scale: 1
   m_AtlasTextures:
   - {fileID: 28204114720316640}
@@ -913,14 +913,14 @@ MonoBehaviour:
     m_Y: 303
     m_Width: 70
     m_Height: 83
-  - m_X: 88
-    m_Y: 189
-    m_Width: 34
-    m_Height: 70
   - m_X: 153
     m_Y: 260
     m_Width: 30
     m_Height: 44
+  - m_X: 88
+    m_Y: 189
+    m_Width: 34
+    m_Height: 70
   m_FreeGlyphRects:
   - m_X: 75
     m_Y: 29
@@ -1026,6 +1026,14 @@ MonoBehaviour:
     m_Y: 303
     m_Width: 18
     m_Height: 720
+  - m_X: 153
+    m_Y: 304
+    m_Width: 36
+    m_Height: 719
+  - m_X: 183
+    m_Y: 260
+    m_Width: 6
+    m_Height: 763
   - m_X: 61
     m_Y: 189
     m_Width: 27
@@ -1038,14 +1046,6 @@ MonoBehaviour:
     m_Y: 189
     m_Width: 4
     m_Height: 71
-  - m_X: 153
-    m_Y: 304
-    m_Width: 36
-    m_Height: 719
-  - m_X: 183
-    m_Y: 260
-    m_Width: 6
-    m_Height: 763
   m_fontInfo:
     Name: Roboto
     PointSize: 146

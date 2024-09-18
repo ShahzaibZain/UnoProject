@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     public Image timerImage;
     public GameObject timerOjbect;
 
+    public Button CardDeckButton;
+
     public int Rank { get; set; } // This property will store the player's rank
     private float totalTimer = 15f;
 
@@ -28,8 +30,6 @@ public class Player : MonoBehaviour
     public PhotonView photonView;
     public GamePlayManager GamePlayManager;
     public GameObject parentGO;
-    private Vector3 parentGOposition;
-    private Vector3 parentGOrotation;
     public bool MyTurn;
 
     public void SetMyTurn(bool value)
@@ -56,6 +56,31 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        if (CardDeckButton == null)
+        {
+            // Try to find the button in the scene
+            GameObject buttonObject = GamePlayManager.instance.cardDeckBtn;
+
+            if (buttonObject != null)
+            {
+                CardDeckButton = buttonObject.GetComponent<Button>();
+
+                if (CardDeckButton != null && GamePlayManager.instance != null)
+                {
+                    // Add the listener to the button's onClick event
+                    CardDeckButton.onClick.AddListener(GamePlayManager.instance.OnDeckClick);
+                }
+                else
+                {
+                    Debug.LogError("CardDeckButton or GamePlayManager.instance is null. Cannot add onClick listener.");
+                }
+            }
+            else
+            {
+                Debug.LogError("CardDeckButton GameObject not found in the scene.");
+            }
+        }
+
         // Set parent and position the player correctly
         if (parentGO != null)
         {
