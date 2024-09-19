@@ -894,11 +894,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 0
-  cloudProjectId: 
+  cloudProjectId: 76aa0771-7389-4268-a5f0-c7521a1b6719
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: UNO_Code
+  organizationId: shahzaibzain2906
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 1
   playerDataPath: 

@@ -343,7 +343,7 @@ public class GamePlayManager : MonoBehaviour
 
         photonView.RPC("RPC_PutCardToWastePile", RpcTarget.All, cardIndex, playerID);
 
-/*        if (p != null)
+        if (p != null)
         {
             if (p.cardsPanel.cards.Count == 0)
             {
@@ -388,7 +388,7 @@ public class GamePlayManager : MonoBehaviour
             {
                 NextTurn();
             }
-        }*/
+        }
     }
     [PunRPC]
     public void RPC_PutCardToWastePile(int CardIndex, int PlayerID)
@@ -400,7 +400,7 @@ public class GamePlayManager : MonoBehaviour
             Debug.Log("Player is null");
 
         }
-        if (p != null)
+        if (p != null && p.photonView.IsMine)
         {
             Debug.Log("PutCardToWastePile player " + p.parentGO.name);
             p.RemoveCard(card);
@@ -411,55 +411,52 @@ public class GamePlayManager : MonoBehaviour
             }
             GameManager.PlaySound(draw_card_clip);
         }
-        if (PhotonNetwork.IsMasterClient)
+/*        if (p != null)
         {
-            if (p != null)
+            if (p.cardsPanel.cards.Count == 0)
             {
-                if (p.cardsPanel.cards.Count == 0)
-                {
-                    Invoke("SetupGameOver", 2f);
-                    return;
-                }
+                Invoke("SetupGameOver", 2f);
+                return;
+            }
 
-                if (card.Type == CardType.Other)
+            if (card.Type == CardType.Other)
+            {
+                p.Timer = true;
+                p.choosingColor = true;
+                if (p.isUserPlayer)
                 {
-                    p.Timer = true;
-                    p.choosingColor = true;
-                    if (p.isUserPlayer)
-                    {
-                        colorChoose.ShowPopup();
-                    }
-                }
-                if (card.Value == CardValue.Reverse)
-                {
-                    clockwiseTurn = !clockwiseTurn;
-                    cardEffectAnimator.Play(clockwiseTurn ? "ClockWiseAnim" : "AntiClockWiseAnim");
-                    Invoke("NextTurn", 1.5f);
-                }
-                else if (card.Value == CardValue.Skip)
-                {
-                    //NextPlayerIndex();
-                    int step = clockwiseTurn ? 1 : -1;
-                    int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
-                    players[tempPlayerIndex].ShowMessage("Turn Skipped!");
-                    Invoke("SkipTurn", 1.5f);
-                }
-                else if (card.Value == CardValue.DrawTwo)
-                {
-                    //NextPlayerIndex();
-                    int step = clockwiseTurn ? 1 : -1;
-                    int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
-                    players[tempPlayerIndex].ShowMessage("+2");
-                    wildCardParticle.Emit(30);
-                    StartCoroutine(DealCardsToPlayer(players[tempPlayerIndex], 2, .5f));
-                    Invoke("NextTurn", 1.5f);
-                }
-                else
-                {
-                    NextTurn();
+                    colorChoose.ShowPopup();
                 }
             }
-        }
+            if (card.Value == CardValue.Reverse)
+            {
+                clockwiseTurn = !clockwiseTurn;
+                cardEffectAnimator.Play(clockwiseTurn ? "ClockWiseAnim" : "AntiClockWiseAnim");
+                Invoke("NextTurn", 1.5f);
+            }
+            else if (card.Value == CardValue.Skip)
+            {
+                //NextPlayerIndex();
+                int step = clockwiseTurn ? 1 : -1;
+                int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
+                players[tempPlayerIndex].ShowMessage("Turn Skipped!");
+                Invoke("SkipTurn", 1.5f);
+            }
+            else if (card.Value == CardValue.DrawTwo)
+            {
+                //NextPlayerIndex();
+                int step = clockwiseTurn ? 1 : -1;
+                int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
+                players[tempPlayerIndex].ShowMessage("+2");
+                wildCardParticle.Emit(30);
+                StartCoroutine(DealCardsToPlayer(players[tempPlayerIndex], 2, .5f));
+                Invoke("NextTurn", 1.5f);
+            }
+            else
+            {
+                NextTurn();
+            }
+        }*/
         
     }
 
