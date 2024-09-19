@@ -80,6 +80,7 @@ MonoBehaviour:
   - SyncPlayerOrder
   - NextPlayerTurn
   - SkipNextPlayerTurn
+  - RPC_PutCardToWastePile
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

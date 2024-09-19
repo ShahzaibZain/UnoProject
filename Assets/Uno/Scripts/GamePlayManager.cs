@@ -336,27 +336,14 @@ public class GamePlayManager : MonoBehaviour
             photonView.RPC("SyncPickCardFromDeck", RpcTarget.All, cardIndex, p.photonView.OwnerActorNr);
         }
     }
-
     public void PutCardToWastePile(Card c, Player p = null)
-    {
-        if (p == null)
-        {
-            Debug.Log("Player is null");
+    { 
+        int playerID = p.photonView.OwnerActorNr;
+        int cardIndex = p.cardsPanel.cards.IndexOf(c);
 
-        }
-        if (p != null)
-        {
-            Debug.Log("PutCardToWastePile player " + p.parentGO.name);
-            p.RemoveCard(c);
-            Destroy(c.gameObject);
-            if (p.cardsPanel.cards.Count == 1 && !p.unoClicked)
-            {
-                ApplyUnoCharge(CurrentPlayer);
-            }
-            GameManager.PlaySound(draw_card_clip);
-        }
+        photonView.RPC("RPC_PutCardToWastePile", RpcTarget.All, cardIndex, playerID);
 
-        if (p != null)
+/*        if (p != null)
         {
             if (p.cardsPanel.cards.Count == 0)
             {
@@ -383,7 +370,7 @@ public class GamePlayManager : MonoBehaviour
             {
                 //NextPlayerIndex();
                 int step = clockwiseTurn ? 1 : -1;
-                int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count); 
+                int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
                 players[tempPlayerIndex].ShowMessage("Turn Skipped!");
                 Invoke("SkipTurn", 1.5f);
             }
@@ -401,8 +388,147 @@ public class GamePlayManager : MonoBehaviour
             {
                 NextTurn();
             }
-        }
+        }*/
     }
+    [PunRPC]
+    public void RPC_PutCardToWastePile(int CardIndex, int PlayerID)
+    {
+        Player p = players.Find(p => p.photonView.OwnerActorNr == PlayerID);
+        Card card = p.cardsPanel.cards[CardIndex];
+        if (p == null)
+        {
+            Debug.Log("Player is null");
+
+        }
+        if (p != null)
+        {
+            Debug.Log("PutCardToWastePile player " + p.parentGO.name);
+            p.RemoveCard(card);
+            Destroy(card.gameObject);
+            if (p.cardsPanel.cards.Count == 1 && !p.unoClicked)
+            {
+                ApplyUnoCharge(p);
+            }
+            GameManager.PlaySound(draw_card_clip);
+        }
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (p != null)
+            {
+                if (p.cardsPanel.cards.Count == 0)
+                {
+                    Invoke("SetupGameOver", 2f);
+                    return;
+                }
+
+                if (card.Type == CardType.Other)
+                {
+                    p.Timer = true;
+                    p.choosingColor = true;
+                    if (p.isUserPlayer)
+                    {
+                        colorChoose.ShowPopup();
+                    }
+                }
+                if (card.Value == CardValue.Reverse)
+                {
+                    clockwiseTurn = !clockwiseTurn;
+                    cardEffectAnimator.Play(clockwiseTurn ? "ClockWiseAnim" : "AntiClockWiseAnim");
+                    Invoke("NextTurn", 1.5f);
+                }
+                else if (card.Value == CardValue.Skip)
+                {
+                    //NextPlayerIndex();
+                    int step = clockwiseTurn ? 1 : -1;
+                    int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
+                    players[tempPlayerIndex].ShowMessage("Turn Skipped!");
+                    Invoke("SkipTurn", 1.5f);
+                }
+                else if (card.Value == CardValue.DrawTwo)
+                {
+                    //NextPlayerIndex();
+                    int step = clockwiseTurn ? 1 : -1;
+                    int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
+                    players[tempPlayerIndex].ShowMessage("+2");
+                    wildCardParticle.Emit(30);
+                    StartCoroutine(DealCardsToPlayer(players[tempPlayerIndex], 2, .5f));
+                    Invoke("NextTurn", 1.5f);
+                }
+                else
+                {
+                    NextTurn();
+                }
+            }
+        }
+        
+    }
+
+    /*    public void RPC_PutCardToWastePile(Card c, Player p = null)
+        {
+            if (p == null)
+            {
+                Debug.Log("Player is null");
+
+            }
+            if (p != null)
+            {
+                Debug.Log("PutCardToWastePile player " + p.parentGO.name);
+                p.RemoveCard(c);
+                Destroy(c.gameObject);
+                if (p.cardsPanel.cards.Count == 1 && !p.unoClicked)
+                {
+                    ApplyUnoCharge(CurrentPlayer);
+                }
+                GameManager.PlaySound(draw_card_clip);
+            }
+
+            if (p != null)
+            {
+                if (p.cardsPanel.cards.Count == 0)
+                {
+                    Invoke("SetupGameOver", 2f);
+                    return;
+                }
+
+                if (c.Type == CardType.Other)
+                {
+                    CurrentPlayer.Timer = true;
+                    CurrentPlayer.choosingColor = true;
+                    if (CurrentPlayer.isUserPlayer)
+                    {
+                        colorChoose.ShowPopup();
+                    }
+                }
+                if (c.Value == CardValue.Reverse)
+                {
+                    clockwiseTurn = !clockwiseTurn;
+                    cardEffectAnimator.Play(clockwiseTurn ? "ClockWiseAnim" : "AntiClockWiseAnim");
+                    Invoke("NextTurn", 1.5f);
+                }
+                else if (c.Value == CardValue.Skip)
+                {
+                    //NextPlayerIndex();
+                    int step = clockwiseTurn ? 1 : -1;
+                    int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count); 
+                    players[tempPlayerIndex].ShowMessage("Turn Skipped!");
+                    Invoke("SkipTurn", 1.5f);
+                }
+                else if (c.Value == CardValue.DrawTwo)
+                {
+                    //NextPlayerIndex();
+                    int step = clockwiseTurn ? 1 : -1;
+                    int tempPlayerIndex = Mod(currentPlayerIndex + step, players.Count);
+                    players[tempPlayerIndex].ShowMessage("+2");
+                    wildCardParticle.Emit(30);
+                    StartCoroutine(DealCardsToPlayer(players[tempPlayerIndex], 2, .5f));
+                    Invoke("NextTurn", 1.5f);
+                }
+                else
+                {
+                    NextTurn();
+                }
+            }
+        }*/
 
     public Card CreateCard(CardType type, CardValue value)
     {
